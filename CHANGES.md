@@ -6,6 +6,14 @@ The canonical, full changelog lives in [CHANGELOG.md](CHANGELOG.md) — this fil
 exists because the Moodle Plugins Directory uploader prefills release notes
 from a file named exactly `CHANGES.md` / `CHANGES` / `CHANGES.txt`.
 
+## 1.3.2 - 2026-05-09
+
+### Changed
+- Renamed the source repository to `moodle-mod_modernvideoplayer` to match
+  Moodle's recommended repository naming convention.
+- Updated public GitHub links in README, contribution notes, issue templates,
+  and Moodle submission documentation.
+
 ## 1.3.1 - 2026-05-09
 
 ### Fixed

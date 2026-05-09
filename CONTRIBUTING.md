@@ -6,8 +6,8 @@ better for every Moodle site that uses it.
 
 ## Ways to contribute
 
-- **Report a bug** — open a [GitHub Issue](https://github.com/adebareshowemimo/mod_modernvideoplayer/issues/new/choose) using the *Bug report* template.
-- **Suggest a feature** — open a [Discussion](https://github.com/adebareshowemimo/mod_modernvideoplayer/discussions) first so we can scope it.
+- **Report a bug** — open a [GitHub Issue](https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer/issues/new/choose) using the *Bug report* template.
+- **Suggest a feature** — open a [Discussion](https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer/discussions) first so we can scope it.
 - **Improve docs** — PRs against `README.md` or the docs folder are always welcome.
 - **Fix code** — see "Development setup" below.
 
@@ -80,8 +80,8 @@ on your first PR with a one-click sign-off.
 
 ## Where to ask questions
 
-- [GitHub Discussions](https://github.com/adebareshowemimo/mod_modernvideoplayer/discussions) — ideas, help, show-and-tell
-- [GitHub Issues](https://github.com/adebareshowemimo/mod_modernvideoplayer/issues) — bugs only
+- [GitHub Discussions](https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer/discussions) — ideas, help, show-and-tell
+- [GitHub Issues](https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer/issues) — bugs only
 - Moodle forums — general Moodle help
 
 ## Code of Conduct

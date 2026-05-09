@@ -16,18 +16,18 @@ the remaining sections match the structure of comparable activity modules
 |icon =
 |image =
 |description = A modern, privacy-first HTML5 video activity with heartbeat-validated progress, merged watched segments, focus mode, bookmarks, captions, chapters, gradebook integration and full backup/restore.
-|issues = https://github.com/adebareshowemimo/mod_modernvideoplayer/issues
+|issues = https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer/issues
 |discussion =
 |maintainer = [[User:Adebare Showemimo|Adebare Showemimo]]
 |contributors =
 |moodle = 4.5, 5.0, 5.1, 5.2
 |php = 8.1, 8.2, 8.3
 |plugins directory = https://moodle.org/plugins/mod_modernvideoplayer
-|source control = https://github.com/adebareshowemimo/mod_modernvideoplayer
+|source control = https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer
 |translations =
-|tracker = https://github.com/adebareshowemimo/mod_modernvideoplayer/issues
-|documentation = https://github.com/adebareshowemimo/mod_modernvideoplayer#readme
-|release = 1.3.1
+|tracker = https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer/issues
+|documentation = https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer#readme
+|release = 1.3.2
 |dependencies =
 |license = GPL-3.0-or-later
 }}
@@ -68,7 +68,7 @@ alternative to embedded third-party video platforms.
 
 == Installation ==
 
-# Download the latest release ZIP from the Moodle Plugins Directory or the [https://github.com/adebareshowemimo/mod_modernvideoplayer GitHub releases page].
+# Download the latest release ZIP from the Moodle Plugins Directory or the [https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer GitHub releases page].
 # In your Moodle site go to ''Site administration → Plugins → Install plugins'' and upload the ZIP, or unpack it under `mod/modernvideoplayer/` on the server.
 # Visit ''Site administration → Notifications'' to run the installer.
 # Review the site-wide defaults at ''Site administration → Plugins → Activity modules → Modern video player''.
@@ -110,7 +110,7 @@ third-party tracking or analytics code.
 == See also ==
 
 * [https://moodle.org/plugins/mod_modernvideoplayer Plugin page on the Moodle Plugins Directory]
-* [https://github.com/adebareshowemimo/mod_modernvideoplayer Source code on GitHub]
+* [https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer Source code on GitHub]
 
 [[Category:Activity]]
 [[Category:Contributed code]]

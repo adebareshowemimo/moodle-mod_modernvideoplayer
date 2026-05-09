@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         Thanks for the suggestion! For large features please start a
-        [Discussion](https://github.com/adebareshowemimo/mod_modernvideoplayer/discussions)
+        [Discussion](https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer/discussions)
         first so we can align on scope before you invest time in a PR.
 
   - type: textarea

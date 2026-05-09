@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Planned
 - Learner activity report (per-user watch progress export)
 
+## [1.3.2] - 2026-05-09
+
+### Changed
+- Renamed the public source repository to `moodle-mod_modernvideoplayer` to
+  match Moodle's recommended `moodle-{plugintype}_{pluginname}` convention.
+- Updated README, issue templates, contribution notes, and Moodle submission
+  documentation to use the new repository URL.
+
 ## [1.3.1] - 2026-05-09
 
 ### Fixed
@@ -242,5 +250,5 @@ Initial alpha release.
 - Site-wide default settings (autoplay, fullscreen, speed, seek tolerance,
   completion threshold)
 
-[Unreleased]: https://github.com/adebareshowemimo/mod_modernvideoplayer/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/adebareshowemimo/mod_modernvideoplayer/releases/tag/v0.1.0
+[Unreleased]: https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer/releases/tag/v0.1.0

@@ -1,6 +1,6 @@
 # Modern Video Player for Moodle (`mod_modernvideoplayer`)
 
-[![Moodle Plugin CI](https://github.com/adebareshowemimo/mod_modernvideoplayer/actions/workflows/moodle-ci.yml/badge.svg)](https://github.com/adebareshowemimo/mod_modernvideoplayer/actions/workflows/moodle-ci.yml)
+[![Moodle Plugin CI](https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer/actions/workflows/moodle-ci.yml/badge.svg)](https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer/actions/workflows/moodle-ci.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![Moodle 4.5+](https://img.shields.io/badge/Moodle-4.5%2B-orange.svg)](https://moodle.org)
 [![PHP 8.1+](https://img.shields.io/badge/PHP-8.1%2B-8892BF.svg)](https://www.php.net)
@@ -130,7 +130,7 @@ Everything below is in the free GPL build — no license key, no upsell wall.
 
 ### Via Moodle admin UI (recommended)
 
-1. Download the latest release ZIP from the [Releases page](https://github.com/adebareshowemimo/mod_modernvideoplayer/releases).
+1. Download the latest release ZIP from the [Releases page](https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer/releases).
 2. In Moodle, go to **Site administration → Plugins → Install plugins**.
 3. Drop the ZIP into the uploader.
 4. Confirm the plugin details and click **Install**. Run the upgrade.
@@ -139,7 +139,7 @@ Everything below is in the free GPL build — no license key, no upsell wall.
 
 ```bash
 cd /path/to/moodle/mod
-git clone https://github.com/adebareshowemimo/mod_modernvideoplayer.git
+git clone https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer.git
 # Then from Moodle root:
 php admin/cli/upgrade.php
 ```

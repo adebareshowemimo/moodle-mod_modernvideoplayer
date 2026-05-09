@@ -61,15 +61,15 @@ Last updated: 2026-04-24
 
 ### Source control
 
-- [https://github.com/adebareshowemimo/mod_modernvideoplayer](https://github.com/adebareshowemimo/mod_modernvideoplayer)
+- [https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer](https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer)
 
 ### Issue tracker
 
-- [https://github.com/adebareshowemimo/mod_modernvideoplayer/issues](https://github.com/adebareshowemimo/mod_modernvideoplayer/issues)
+- [https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer/issues](https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer/issues)
 
 ### Documentation
 
-- [https://github.com/adebareshowemimo/mod_modernvideoplayer#readme](https://github.com/adebareshowemimo/mod_modernvideoplayer#readme)
+- [https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer#readme](https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer#readme)
 
 ## Recommended Final Sequence
 
