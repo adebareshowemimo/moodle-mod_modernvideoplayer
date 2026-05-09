@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Planned
 - Learner activity report (per-user watch progress export)
 
+## [1.3.5] - 2026-05-09
+
+### Fixed
+- Removed the redundant manual `$PAGE->requires->css()` include for
+  `styles.css`; Moodle loads plugin stylesheets automatically.
+
 ## [1.3.4] - 2026-05-09
 
 ### Fixed

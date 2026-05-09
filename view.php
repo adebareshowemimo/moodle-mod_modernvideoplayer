@@ -68,7 +68,6 @@ $PAGE->add_body_class($showprimarynav ? 'modernvideoplayer-show-primarynav' : 'm
 $PAGE->add_body_class($showsecondarynav ? 'modernvideoplayer-show-secondarynav' : 'modernvideoplayer-hide-secondarynav');
 $PAGE->add_body_class($showcourseindex ? 'modernvideoplayer-show-courseindex' : 'modernvideoplayer-hide-courseindex');
 $PAGE->add_body_class($showrightblocks ? 'modernvideoplayer-show-rightblocks' : 'modernvideoplayer-hide-rightblocks');
-$PAGE->requires->css(new moodle_url('/mod/modernvideoplayer/styles.css'));
 
 $renderer = $PAGE->get_renderer('mod_modernvideoplayer');
 $videofile = modernvideoplayer_get_file($context, 'video');
