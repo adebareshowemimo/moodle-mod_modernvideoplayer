@@ -20,7 +20,7 @@ the remaining sections match the structure of comparable activity modules
 |discussion =
 |maintainer = [[User:Adebare Showemimo|Adebare Showemimo]]
 |contributors =
-|moodle = 4.5, 5.0
+|moodle = 4.5, 5.0, 5.1, 5.2
 |php = 8.1, 8.2, 8.3
 |plugins directory = https://moodle.org/plugins/mod_modernvideoplayer
 |source control = https://github.com/adebareshowemimo/mod_modernvideoplayer

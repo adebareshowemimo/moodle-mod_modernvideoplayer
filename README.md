@@ -122,7 +122,7 @@ Everything below is in the free GPL build — no license key, no upsell wall.
 
 ## Requirements
 
-- Moodle **4.5+** or **5.0+**
+- Moodle **4.5+** through **5.2+**
 - PHP **8.1+**
 - Modern browser with HTML5 video support
 

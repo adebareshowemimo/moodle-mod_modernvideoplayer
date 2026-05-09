@@ -22,7 +22,7 @@ body:
     id: moodle-version
     attributes:
       label: Moodle version
-      placeholder: "4.5.0 / 5.0.0"
+      placeholder: "4.5.0 / 5.2.0"
     validations:
       required: true
 

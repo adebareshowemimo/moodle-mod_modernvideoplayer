@@ -17,7 +17,7 @@ from a file named exactly `CHANGES.md` / `CHANGES` / `CHANGES.txt`.
   were silently dropped on course duplicate / course restore.
 
 ### Added
-- `$plugin->supported = [405, 500]` declared in `version.php` so the Plugins
+- `$plugin->supported = [405, 502]` declared in `version.php` so the Plugins
   Directory auto-publishes the supported Moodle version range.
 - Privacy metadata language strings for the bookmarks table.
 
