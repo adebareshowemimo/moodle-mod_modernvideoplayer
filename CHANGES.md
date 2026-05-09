@@ -6,6 +6,32 @@ The canonical, full changelog lives in [CHANGELOG.md](CHANGELOG.md) — this fil
 exists because the Moodle Plugins Directory uploader prefills release notes
 from a file named exactly `CHANGES.md` / `CHANGES` / `CHANGES.txt`.
 
+## 1.3.0 - 2026-05-09
+
+### Added
+- End-of-video "Next activity" overlay with Replay and Continue actions.
+- Per-activity Continue target settings: automatic next activity in course order
+  or a manually selected activity.
+- New `mod_modernvideoplayer_get_next_activity` AJAX web service.
+- Completion badge in the custom player controls.
+- Moodle 5.2 support declaration while keeping Moodle 4.5 as the minimum
+  supported version.
+
+### Changed
+- Teacher report now uses Moodle `table_sql` for pagination, sortable columns,
+  and downloadable exports.
+- Report KPI totals now use aggregate SQL that respects the active report
+  filters.
+- Completed-video resume now opens a replay prompt instead of resuming at the
+  final timestamp.
+- Seekbar drag and click behavior now updates the UI immediately while still
+  respecting validated seek limits.
+
+### Fixed
+- Completion-gated next activities can unlock immediately after video completion
+  because Moodle completion is synced before resolving the Continue target.
+- Fullscreen fallback support improved for WebKit/iOS Safari.
+
 ## 1.2.0 — 2026-04-23
 
 ### Fixed

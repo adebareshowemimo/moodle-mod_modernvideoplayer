@@ -10,6 +10,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Planned
 - Learner activity report (per-user watch progress export)
 
+## [1.3.0] - 2026-05-09
+
+### Added
+- End-of-video "Next activity" overlay with Replay and Continue actions.
+- Configurable Continue target per activity: automatic next activity in course
+  order or a manually selected course module.
+- New AJAX web service `mod_modernvideoplayer_get_next_activity` to resolve the
+  learner-visible next activity after completion state is refreshed.
+- Completion badge in the custom player controls.
+- Local release helper script `run-ci-local.ps1`.
+
+### Changed
+- Report page now uses Moodle `table_sql` for pagination, sortable columns, and
+  downloadable exports instead of rendering every learner row in a Mustache
+  table.
+- Report KPI cards now use aggregate SQL so totals match the active filters
+  without loading all rows into PHP.
+- Resume behavior now treats already-completed saved positions as a replay
+  prompt instead of trying to resume at the end of the video.
+- Seekbar drag and click behavior now updates immediately while still respecting
+  the server-validated allowed seek position.
+- Declared support range is Moodle 4.5 through Moodle 5.2.
+
+### Fixed
+- Moodle completion is synced before next-activity resolution so completion-gated
+  activities can become available immediately after video completion.
+- Fullscreen fallback handling improved for WebKit/iOS Safari.
+
 ## [1.1.0] - 2026-04-23
 
 ### Changed
