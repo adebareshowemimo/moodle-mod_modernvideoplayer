@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Planned
 - Learner activity report (per-user watch progress export)
 
+## [1.3.4] - 2026-05-09
+
+### Fixed
+- Added full Moodle GPL boilerplate headers with explicit copyright and
+  license markers to CSS, Mustache templates, AMD source, and AMD build files.
+
 ## [1.3.3] - 2026-05-09
 
 ### Fixed
