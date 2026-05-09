@@ -29,7 +29,6 @@ use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_single_structure;
 use core_external\external_value;
-use mod_modernvideoplayer\local\playback_manager;
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/mod/modernvideoplayer/locallib.php');
@@ -63,7 +62,30 @@ class mark_complete extends external_api {
      * @return array
      */
     public static function execute(int $cmid, float $currenttime, float $duration, string $sessiontoken): array {
-        $result = heartbeat::execute($cmid, $currenttime, $duration, false, 1.0, 'visible', $sessiontoken);
+        $params = self::validate_parameters(self::execute_parameters(), [
+            'cmid' => $cmid,
+            'currenttime' => $currenttime,
+            'duration' => $duration,
+            'sessiontoken' => $sessiontoken,
+        ]);
+
+        [$course, $cm] = modernvideoplayer_get_course_module_and_instance($params['cmid']);
+        require_course_login($course, true, $cm);
+
+        $context = context_module::instance($cm->id);
+        self::validate_context($context);
+        require_capability('mod/modernvideoplayer:submitprogress', $context);
+
+        $result = heartbeat::execute(
+            $params['cmid'],
+            $params['currenttime'],
+            $params['duration'],
+            false,
+            1.0,
+            'visible',
+            $params['sessiontoken']
+        );
+
         return [
             'completed' => (bool) $result['completed'],
             'percentcomplete' => (float) $result['percentcomplete'],

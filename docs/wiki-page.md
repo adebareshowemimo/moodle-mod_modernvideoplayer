@@ -27,7 +27,7 @@ the remaining sections match the structure of comparable activity modules
 |translations =
 |tracker = https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer/issues
 |documentation = https://github.com/adebareshowemimo/moodle-mod_modernvideoplayer#readme
-|release = 1.3.2
+|release = 1.3.3
 |dependencies =
 |license = GPL-3.0-or-later
 }}

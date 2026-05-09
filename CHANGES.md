@@ -6,6 +6,12 @@ The canonical, full changelog lives in [CHANGELOG.md](CHANGELOG.md) — this fil
 exists because the Moodle Plugins Directory uploader prefills release notes
 from a file named exactly `CHANGES.md` / `CHANGES` / `CHANGES.txt`.
 
+## 1.3.3 - 2026-05-09
+
+### Fixed
+- Added explicit parameter, context, and capability checks to the
+  mark-complete external service.
+
 ## 1.3.2 - 2026-05-09
 
 ### Changed

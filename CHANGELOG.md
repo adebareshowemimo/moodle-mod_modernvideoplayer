@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Planned
 - Learner activity report (per-user watch progress export)
 
+## [1.3.3] - 2026-05-09
+
+### Fixed
+- Added explicit parameter validation, context validation, and
+  `mod/modernvideoplayer:submitprogress` capability enforcement to
+  `mod_modernvideoplayer_mark_complete`.
+
 ## [1.3.2] - 2026-05-09
 
 ### Changed
