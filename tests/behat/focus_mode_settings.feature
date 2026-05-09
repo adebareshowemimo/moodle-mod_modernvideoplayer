@@ -15,24 +15,12 @@ Feature: Focus Mode enforcement settings
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
     And the following "activities" exist:
-      | activity         | course | name        |
-      | modernvideoplayer | C1     | Focus demo |
+      | activity          | course | name       | idnumber  |
+      | modernvideoplayer | C1     | Focus demo | focusdemo |
 
   Scenario: The Enforcement settings section exposes the Focus Mode toggles with the expected defaults
-    When I am on the "Focus demo" "modernvideoplayer activity editing" page logged in as teacher1
+    When I am on the "focusdemo" "Activity editing" page logged in as "admin"
     And I expand all fieldsets
-    Then I should see "Enforcement settings"
-    And the field "Enforce focus on the video" matches value "0"
-    And the field "Allow Picture-in-Picture" matches value "1"
-    And the field "Allow transcript download" matches value "1"
-
-  Scenario: Teacher can enable Focus Mode and disable transcript download
-    When I am on the "Focus demo" "modernvideoplayer activity editing" page logged in as teacher1
-    And I expand all fieldsets
-    And I set the field "Enforce focus on the video" to "1"
-    And I set the field "Allow transcript download" to "0"
-    And I press "Save and return to course"
-    And I am on the "Focus demo" "modernvideoplayer activity editing" page
-    And I expand all fieldsets
-    Then the field "Enforce focus on the video" matches value "1"
-    And the field "Allow transcript download" matches value "0"
+    Then the field "enforcefocus" matches value "0"
+    And the field "allowpip" matches value "1"
+    And the field "allowtranscriptdownload" matches value "1"

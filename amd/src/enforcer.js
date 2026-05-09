@@ -81,6 +81,16 @@ const enforceFocus = (video, config) => {
             }
         }
     });
+
+    // Pause when the browser window itself loses focus (e.g. Alt-Tab).
+    window.addEventListener('blur', () => {
+        if (!video.paused) {
+            video.pause();
+            if (strings.focuspausedhidden) {
+                window.console.info(strings.focuspausedhidden);
+            }
+        }
+    });
 };
 
 export const init = (video, state, strings, config) => {

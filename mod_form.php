@@ -37,7 +37,7 @@ class mod_modernvideoplayer_mod_form extends moodleform_mod {
      * @return void
      */
     public function definition() {
-        global $CFG;
+        global $CFG, $COURSE, $DB;
 
         $defaults = modernvideoplayer_get_defaults();
         $mform = $this->_form;
@@ -85,6 +85,64 @@ class mod_modernvideoplayer_mod_form extends moodleform_mod {
         $mform->addElement('header', 'playbacksettings', get_string('playbacksettings', 'modernvideoplayer'));
         $mform->addElement('advcheckbox', 'allowresume', get_string('resumeenabled', 'modernvideoplayer'));
         $mform->setDefault('allowresume', $defaults['allowresume']);
+
+        $mform->addElement('advcheckbox', 'allownextactivityoverlay',
+            get_string('allownextactivityoverlay', 'modernvideoplayer'));
+        $mform->setDefault('allownextactivityoverlay', $defaults['allownextactivityoverlay']);
+        $mform->addHelpButton('allownextactivityoverlay', 'allownextactivityoverlay', 'modernvideoplayer');
+
+        $mform->addElement('select', 'nextactivitytarget',
+            get_string('nextactivitytarget', 'modernvideoplayer'), [
+                'auto_next' => get_string('nextactivitytarget_auto', 'modernvideoplayer'),
+                'manual'    => get_string('nextactivitytarget_manual', 'modernvideoplayer'),
+            ]);
+        $mform->setDefault('nextactivitytarget', $defaults['nextactivitytarget']);
+        $mform->hideIf('nextactivitytarget', 'allownextactivityoverlay', 'eq', 0);
+
+        // Build the picker option list. Skip the current cm (no self-reference)
+        // and modules without a view page (e.g. labels). The autocomplete
+        // element below provides the empty-state placeholder via
+        // `noselectionstring`, so we don't seed a 0-keyed entry.
+        $cmoptions = [];
+        $currentcmid = (int) ($this->_cm->id ?? 0);
+        $modinfo = get_fast_modinfo($COURSE);
+        foreach ($modinfo->cms as $cmcandidate) {
+            if ((int) $cmcandidate->id === $currentcmid) {
+                continue;
+            }
+            if (!$cmcandidate->has_view()) {
+                continue;
+            }
+            $cmoptions[(int) $cmcandidate->id] = format_string($cmcandidate->name);
+        }
+
+        // Always include the currently-saved target cm in the option list,
+        // even if it's no longer surfaced by `get_fast_modinfo` (deleted,
+        // hidden, lost its view). Otherwise the autocomplete silently falls
+        // back to the placeholder, looking like the saved value was lost.
+        if (!empty($this->_instance)) {
+            $savedcmid = (int) $DB->get_field('modernvideoplayer', 'nextactivitymanualcmid',
+                ['id' => (int) $this->_instance]);
+            if ($savedcmid > 0 && !array_key_exists($savedcmid, $cmoptions)) {
+                $savedcm = get_coursemodule_from_id('', $savedcmid, 0, false, IGNORE_MISSING);
+                $cmoptions[$savedcmid] = $savedcm
+                    ? format_string($savedcm->name)
+                    : '#' . $savedcmid;
+            }
+        }
+
+        // Autocomplete element gives client-side type-ahead filtering — needed
+        // once a course has hundreds of activities. Empty submission → setType
+        // PARAM_INT coerces to 0.
+        $mform->addElement('autocomplete', 'nextactivitymanualcmid',
+            get_string('nextactivitymanualcmid', 'modernvideoplayer'),
+            $cmoptions,
+            ['noselectionstring' => get_string('choosedots')]);
+        $mform->setType('nextactivitymanualcmid', PARAM_INT);
+        $mform->setDefault('nextactivitymanualcmid', $defaults['nextactivitymanualcmid']);
+        $mform->hideIf('nextactivitymanualcmid', 'allownextactivityoverlay', 'eq', 0);
+        $mform->hideIf('nextactivitymanualcmid', 'nextactivitytarget', 'neq', 'manual');
+
         $mform->addElement('advcheckbox', 'allowrewind', get_string('allowrewind', 'modernvideoplayer'));
         $mform->setDefault('allowrewind', 1);
         $mform->addElement('advcheckbox', 'allowfullscreen', get_string('allowfullscreen', 'modernvideoplayer'));

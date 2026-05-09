@@ -24,14 +24,15 @@
 
 require('../../config.php');
 require_once(__DIR__ . '/locallib.php');
-require_once($CFG->libdir . '/csvlib.class.php');
 
+use mod_modernvideoplayer\local\learners_table;
 use mod_modernvideoplayer\local\reporting;
 
 $id = required_param('id', PARAM_INT);
 $completionfilter = optional_param('completionfilter', 'all', PARAM_ALPHA);
 $suspiciousonly = optional_param('suspiciousonly', 0, PARAM_BOOL);
 $search = trim(optional_param('search', '', PARAM_TEXT));
+$pagesize = max(5, min(500, optional_param('pagesize', 25, PARAM_INT)));
 $download = optional_param('download', '', PARAM_ALPHA);
 
 [$course, $cm, $instance] = modernvideoplayer_get_course_module_and_instance($id, 0);
@@ -45,87 +46,46 @@ $pageparams = [
     'completionfilter' => $completionfilter,
     'suspiciousonly' => $suspiciousonly,
     'search' => $search,
+    'pagesize' => $pagesize,
 ];
 
-$service = new reporting();
-[$rows, $summary] = $service->get_report_data($instance, $completionfilter, (bool) $suspiciousonly, $search);
+$baseurl = new moodle_url('/mod/modernvideoplayer/report.php', $pageparams);
 
-if ($download === 'csv') {
-    $filename = clean_filename(get_string('downloadreportfilename', 'modernvideoplayer') . '-' . $cm->id);
-    $csv = new csv_export_writer('comma');
-    $csv->set_filename($filename);
-    $csv->add_data([
-        get_string('fullname', 'modernvideoplayer'),
-        get_string('email', 'modernvideoplayer'),
-        get_string('duration', 'modernvideoplayer'),
-        get_string('lastposition', 'modernvideoplayer'),
-        get_string('maxverifiedposition', 'modernvideoplayer'),
-        get_string('totalsecondswatched', 'modernvideoplayer'),
-        get_string('percentcomplete', 'modernvideoplayer'),
-        get_string('completed', 'modernvideoplayer'),
-        get_string('completiontime', 'modernvideoplayer'),
-        get_string('lastheartbeat', 'modernvideoplayer'),
-        get_string('lastplaybackrate', 'modernvideoplayer'),
-        get_string('lastvisibility', 'modernvideoplayer'),
-        get_string('suspiciousflags', 'modernvideoplayer'),
-        get_string('integrityfailures', 'modernvideoplayer'),
-    ]);
-    foreach ($rows as $row) {
-        $csv->add_data([
-            fullname($row),
-            $row->email,
-            format_float((float) $row->duration, 2),
-            format_float((float) $row->lastposition, 2),
-            format_float((float) $row->maxverifiedposition, 2),
-            format_float((float) $row->totalsecondswatched, 2),
-            format_float((float) $row->percentcomplete, 2),
-            $row->completed ? get_string('yes', 'modernvideoplayer') : get_string('no', 'modernvideoplayer'),
-            $row->completiontime ? userdate($row->completiontime) : '',
-            $row->lastheartbeat ? userdate($row->lastheartbeat) : '',
-            format_float((float) $row->lastplaybackrate, 2),
-            $row->lastvisibility ?? '',
-            (int) $row->suspiciousflags,
-            (int) $row->integrityfailures,
-        ]);
-    }
-    $csv->download_file();
+// ---------- Download negotiation ----------
+// table_sql sets HTTP headers in `is_downloading()`, so this MUST run before
+// any output (header / heading / template render). The screen path falls
+// through with `is_downloading() === ''`.
+$table = new learners_table('mod-modernvideoplayer-learners',
+    $instance, $completionfilter, (bool) $suspiciousonly, $search);
+$table->define_baseurl($baseurl);
+$table->is_downloadable(true);
+$table->show_download_buttons_at([TABLE_P_BOTTOM]);
+$filename = clean_filename(
+    get_string('downloadreportfilename', 'modernvideoplayer') . '-' . $cm->id);
+$table->is_downloading($download, $filename, format_string($instance->name));
+
+if ($table->is_downloading()) {
+    // Download path: stream rows + exit. No header/footer.
+    $table->out($pagesize, false);
+    exit;
 }
 
-$PAGE->set_url('/mod/modernvideoplayer/report.php', $pageparams);
+$PAGE->set_url($baseurl);
 $PAGE->set_context($context);
 $PAGE->set_title(format_string($instance->name) . ': ' . get_string('report', 'modernvideoplayer'));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_pagelayout('report');
 
-$entries = [];
-foreach ($rows as $row) {
-    $entries[] = [
-        'fullname' => fullname($row),
-        'email' => s($row->email),
-        'duration' => format_float((float) $row->duration, 2),
-        'lastposition' => format_float((float) $row->lastposition, 2),
-        'maxverifiedposition' => format_float((float) $row->maxverifiedposition, 2),
-        'totalsecondswatched' => format_float((float) $row->totalsecondswatched, 2),
-        'percentcomplete' => format_float((float) $row->percentcomplete, 2) . '%',
-        'completed' => $row->completed ? get_string('yes', 'modernvideoplayer') : get_string('no', 'modernvideoplayer'),
-        'completiontime' => $row->completiontime ? userdate($row->completiontime) : '-',
-        'lastheartbeat' => $row->lastheartbeat ? userdate($row->lastheartbeat) : '-',
-        'lastplaybackrate' => format_float((float) $row->lastplaybackrate, 2),
-        'lastvisibility' => s($row->lastvisibility ?? '-'),
-        'suspiciousflags' => (int) $row->suspiciousflags,
-        'integrityfailures' => (int) $row->integrityfailures,
-    ];
-}
+$service = new reporting();
+$summary = $service->get_summary(
+    $instance, $completionfilter, (bool) $suspiciousonly, $search);
 
 $renderer = $PAGE->get_renderer('mod_modernvideoplayer');
-$downloadurl = new moodle_url('/mod/modernvideoplayer/report.php', $pageparams + ['download' => 'csv']);
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('reportheader', 'modernvideoplayer'));
 echo $renderer->render_report([
     'id' => $cm->id,
-    'hasentries' => !empty($entries),
-    'entries' => $entries,
     'totallearners' => $summary['totallearners'],
     'completedlearners' => $summary['completedlearners'],
     'completionrate' => format_float($summary['completionrate'], 2) . '%',
@@ -137,7 +97,17 @@ echo $renderer->render_report([
     'isincomplete' => $completionfilter === 'incomplete',
     'suspiciousonly' => !empty($suspiciousonly),
     'search' => s($search),
-    'filterurl' => (new moodle_url('/mod/modernvideoplayer/report.php', ['id' => $cm->id]))->out(false),
-    'downloadurl' => $downloadurl->out(false),
+    'pagesize' => $pagesize,
+    'pagesizes' => array_map(
+        fn($n) => ['value' => $n, 'selected' => $n === $pagesize],
+        [10, 25, 50, 100, 250]
+    ),
+    'filterurl' => (new moodle_url('/mod/modernvideoplayer/report.php'))->out(false),
+    'clearurl' => (new moodle_url('/mod/modernvideoplayer/report.php', ['id' => $cm->id]))->out(false),
+    'hasactivefilters' => $completionfilter !== 'all' || $suspiciousonly || $search !== '' || $pagesize !== 25,
 ]);
+
+// table_sql echoes its own pagination, sortable headers, and download buttons.
+$table->out($pagesize, true);
+
 echo $OUTPUT->footer();

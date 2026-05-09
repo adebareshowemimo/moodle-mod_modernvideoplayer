@@ -46,6 +46,13 @@ $functions = [
         'ajax' => true,
         'capabilities' => 'mod/modernvideoplayer:submitprogress',
     ],
+    'mod_modernvideoplayer_get_next_activity' => [
+        'classname' => 'mod_modernvideoplayer\external\get_next_activity',
+        'description' => 'Resolve the next activity target for the end-of-video overlay.',
+        'type' => 'read',
+        'ajax' => true,
+        'capabilities' => 'mod/modernvideoplayer:view',
+    ],
     'mod_modernvideoplayer_reset_progress' => [
         'classname' => 'mod_modernvideoplayer\external\reset_progress',
         'description' => 'Reset learner progress back to zero for restart from beginning.',

@@ -48,20 +48,25 @@ class completion_manager {
             return $iscomplete;
         }
 
-        if ($iscomplete && !$progress->completed) {
+        if ($iscomplete) {
+            if (!$progress->completed) {
+                $event = \mod_modernvideoplayer\event\completion_achieved::create([
+                    'context' => context_module::instance($cm->id),
+                    'objectid' => $instance->id,
+                    'relateduserid' => $progress->userid,
+                ]);
+                $event->trigger();
+            }
+
             $progress->completed = 1;
-            $progress->completiontime = time();
+            if (empty($progress->completiontime)) {
+                $progress->completiontime = time();
+            }
 
-            $event = \mod_modernvideoplayer\event\completion_achieved::create([
-                'context' => context_module::instance($cm->id),
-                'objectid' => $instance->id,
-                'relateduserid' => $progress->userid,
-            ]);
-            $event->trigger();
-
-            // Only grant completion â€” never revoke it via a learner action.
-            // Completion is sticky: a teacher must use Moodle's standard
-            // "Reset user completion data" tool to remove it.
+            // Keep Moodle's own completion state in sync even if this plugin's
+            // progress row was already marked complete in an earlier request.
+            // Availability conditions for the next activity read Moodle
+            // completion, not the plugin progress table.
             $completion = new completion_info($course);
             $completion->update_state($cm, COMPLETION_COMPLETE, $progress->userid);
         } else if (!$iscomplete) {

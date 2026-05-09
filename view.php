@@ -84,6 +84,11 @@ $enforcefocus = !empty($instance->enforcefocus);
 $allowpip = !$enforcefocus && !empty($instance->allowpip);
 $allowtranscriptdownload = !empty($instance->allowtranscriptdownload);
 
+$shownextactivityoverlay = !empty($instance->allownextactivityoverlay);
+$nextactivity = $shownextactivityoverlay
+    ? modernvideoplayer_get_next_activity($course, $cm, $instance)
+    : null;
+
 $playercontext = [
     'cmid' => $cm->id,
     'name' => format_string($instance->name),
@@ -101,6 +106,10 @@ $playercontext = [
     'enforcefocus' => $enforcefocus,
     'allowpip' => $allowpip,
     'allowtranscriptdownload' => $allowtranscriptdownload,
+    'shownextactivityoverlay' => $shownextactivityoverlay,
+    'nextactivityurl' => $nextactivity['url'] ?? '',
+    'nextactivityname' => $nextactivity['name'] ?? '',
+    'nextactivityisfallback' => $nextactivity['isfallback'] ?? false,
     'backurl' => $backurl->out(false),
     'backlabel' => get_string('back'),
     'reporturl' => !$focusmode && has_capability('mod/modernvideoplayer:viewreports', $context)
@@ -136,6 +145,10 @@ $jsconfig = [
     'enforcefocus' => $enforcefocus,
     'allowpip' => $allowpip,
     'allowtranscriptdownload' => $allowtranscriptdownload,
+    'allownextactivityoverlay' => $shownextactivityoverlay,
+    'nextactivityurl' => $nextactivity['url'] ?? '',
+    'nextactivityname' => $nextactivity['name'] ?? '',
+    'nextactivityisfallback' => $nextactivity['isfallback'] ?? false,
     'transcriptfilename' => clean_filename(format_string($instance->name)) . '-'
         . get_string('transcriptdownloadfilename', 'modernvideoplayer') . '.txt',
     'strings' => [
@@ -151,6 +164,10 @@ $jsconfig = [
         'startfrombeginning' => get_string('startfrombeginning', 'modernvideoplayer'),
         'resumepromptheading' => get_string('resumepromptheading', 'modernvideoplayer'),
         'resumepromptbody' => get_string('resumepromptbody', 'modernvideoplayer'),
+        'replayeyebrow' => get_string('replayeyebrow', 'modernvideoplayer'),
+        'replaypromptheading' => get_string('replaypromptheading', 'modernvideoplayer'),
+        'replaypromptbody' => get_string('replaypromptbody', 'modernvideoplayer'),
+        'replaywatching' => get_string('replaywatching', 'modernvideoplayer'),
         'captionsoff' => get_string('captionsoff', 'modernvideoplayer'),
         'captionson' => get_string('captionson', 'modernvideoplayer', '__LABEL__'),
         'togglecaptions' => get_string('togglecaptions', 'modernvideoplayer'),
@@ -171,6 +188,11 @@ $jsconfig = [
         'pipdisabled' => get_string('pipdisabled', 'modernvideoplayer'),
         'transcriptdownload' => get_string('transcriptdownload', 'modernvideoplayer'),
         'focuspausedhidden' => get_string('focuspausedhidden', 'modernvideoplayer'),
+        'nextactivity' => get_string('nextactivity', 'modernvideoplayer'),
+        'nextactivityheading' => get_string('nextactivityheading', 'modernvideoplayer'),
+        'nextactivitybody' => get_string('nextactivitybody', 'modernvideoplayer'),
+        'nextactivitycontinue' => get_string('nextactivitycontinue', 'modernvideoplayer'),
+        'nextactivityreplay' => get_string('nextactivityreplay', 'modernvideoplayer'),
     ],
 ];
 

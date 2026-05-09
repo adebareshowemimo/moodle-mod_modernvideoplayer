@@ -72,6 +72,12 @@ if ($ADMIN->fulltree) {
         1
     ));
     $settings->add(new admin_setting_configcheckbox(
+        'modernvideoplayer/defaultallownextactivityoverlay',
+        get_string('defaultallownextactivityoverlay', 'modernvideoplayer'),
+        '',
+        1
+    ));
+    $settings->add(new admin_setting_configcheckbox(
         'modernvideoplayer/defaultfullscreenenabled',
         get_string('defaultfullscreenenabled', 'modernvideoplayer'),
         '',

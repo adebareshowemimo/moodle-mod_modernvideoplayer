@@ -22,6 +22,10 @@
                 <div class="d-flex align-items-end justify-content-between gap-3 flex-wrap">
                     <div class="modernvideoplayer-status__headline" data-region="playback-time">0:00 / 0:00</div>
                     <div class="modernvideoplayer-status__meta" data-region="percent-complete">0%</div>
+                    <div class="modernvideoplayer-status__badge d-none" data-region="completion-badge" role="status" aria-label="{{#str}}completed, modernvideoplayer{{/str}}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13.485 1.929a1 1 0 0 1 1.414 1.414l-8 8a1 1 0 0 1-1.414 0l-4-4a1 1 0 0 1 1.414-1.414L6.5 9.243z"/></svg>
+                        <span>{{#str}}completed, modernvideoplayer{{/str}}</span>
+                    </div>
                 </div>
                 <div class="progress modernvideoplayer-status__track position-relative" aria-label="{{#str}}progresslabel, modernvideoplayer{{/str}}">
                     <div class="progress-bar modernvideoplayer-status__fill modernvideoplayer-status__fill--buffered position-absolute top-0 start-0 h-100" role="progressbar" data-region="buffered-progress" style="width: 0%" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>

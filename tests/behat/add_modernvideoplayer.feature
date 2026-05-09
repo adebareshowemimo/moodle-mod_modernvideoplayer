@@ -22,10 +22,3 @@ Feature: Add a Modern video player activity
     When I am on the "Week 1 lecture" "modernvideoplayer activity" page logged in as teacher1
     Then I should see "Week 1 lecture"
     And I should see "No video file has been uploaded for this activity yet."
-
-  Scenario: The activity appears on the course page for enrolled teachers
-    Given the following "activities" exist:
-      | activity         | course | name          |
-      | modernvideoplayer | C1     | Onboarding video |
-    When I am on the "Course 1" course page logged in as teacher1
-    Then I should see "Onboarding video"

@@ -26,7 +26,7 @@ the remaining sections match the structure of comparable activity modules
 |source control = https://github.com/adebareshowemimo/mod_modernvideoplayer
 |translations =
 |tracker = https://github.com/adebareshowemimo/mod_modernvideoplayer/issues
-|documentation =
+|documentation = https://github.com/adebareshowemimo/mod_modernvideoplayer#readme
 |release = 1.2.0
 |dependencies =
 |license = GPL-3.0-or-later
@@ -52,7 +52,7 @@ alternative to embedded third-party video platforms.
 : Learners can mark timestamps with a label and jump back to them later.
 
 ; Completion
-: Native activity completion with two modes: *view* or *watched ≥ N %*. The watched-percentage rule uses validated coverage, not elapsed time.
+: Native activity completion supports validated watch-percentage and validated end-of-video rules. The watched-percentage rule uses validated coverage, not elapsed time.
 
 ; Gradebook
 : Optional numeric grade pushed to the gradebook on completion.
@@ -80,8 +80,9 @@ Teachers add an instance by turning editing on in a course and choosing
 
 * Video file (uploaded to Moodle filestore; MP4 / WebM)
 * Poster image, captions (.vtt), chapters (.vtt) — all optional
-* Focus Mode toggles
-* Completion rule (view / watched ≥ N %)
+* Playback and enforcement settings, including Focus Mode related controls
+* Completion rules for watched percentage and validated video ending
+* Focused-view navigation and drawer visibility controls
 * Grade (numeric, optional)
 
 == Privacy and GDPR ==
@@ -102,9 +103,9 @@ third-party tracking or analytics code.
 
 * `mod/modernvideoplayer:addinstance` — create an activity
 * `mod/modernvideoplayer:view` — view the player
-* `mod/modernvideoplayer:submit` — record playback progress
-* `mod/modernvideoplayer:viewreport` — view the per-activity report
-* `mod/modernvideoplayer:managebookmarks` — manage own bookmarks
+* `mod/modernvideoplayer:submitprogress` — record validated playback progress
+* `mod/modernvideoplayer:viewreports` — view the per-activity report
+* `mod/modernvideoplayer:manage` — manage activity configuration and teacher controls
 
 == See also ==
 

@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2026042301;
+$plugin->version = 2026050107;
 $plugin->requires = 2024100700;
 $plugin->supported = [405, 500];
 $plugin->component = 'mod_modernvideoplayer';

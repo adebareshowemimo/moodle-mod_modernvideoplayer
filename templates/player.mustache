@@ -77,15 +77,38 @@
                     data-region="resume-overlay"
                     style="background: linear-gradient(135deg, rgba(7, 15, 28, 0.84), rgba(10, 25, 47, 0.68)); backdrop-filter: blur(8px);">
                     <div class="text-center text-white p-4 rounded-4 shadow-lg" style="max-width: 28rem; background: rgba(15, 23, 42, 0.72); border: 1px solid rgba(255, 255, 255, 0.12);">
-                        <div class="text-uppercase small fw-semibold mb-2" style="letter-spacing: .12em; color: rgba(191, 219, 254, 0.9);">{{#str}}resumeplayback, modernvideoplayer{{/str}}</div>
+                        <div class="text-uppercase small fw-semibold mb-2" data-region="resume-eyebrow" style="letter-spacing: .12em; color: rgba(191, 219, 254, 0.9);">{{#str}}resumeplayback, modernvideoplayer{{/str}}</div>
                         <h3 class="h4 mb-2" data-region="resume-heading">{{#str}}resumepromptheading, modernvideoplayer{{/str}}</h3>
                         <p class="mb-4 text-white-50" data-region="resume-subtitle">{{#str}}resumepromptbody, modernvideoplayer{{/str}}</p>
                         <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
-                            <button type="button" class="btn btn-primary px-4" data-action="resume-playback">{{#str}}resumeplayback, modernvideoplayer{{/str}}</button>
+                            <button type="button" class="btn btn-outline-light px-4" data-action="resume-playback">{{#str}}resumeplayback, modernvideoplayer{{/str}}</button>
                             <button type="button" class="btn btn-outline-light px-4" data-action="restart-playback">{{#str}}startfrombeginning, modernvideoplayer{{/str}}</button>
+                            {{#shownextactivityoverlay}}
+                            <button type="button" class="btn btn-primary px-4 d-none" data-action="resume-next-activity">
+                                {{#str}}nextactivitycontinue, modernvideoplayer{{/str}}
+                            </button>
+                            {{/shownextactivityoverlay}}
                         </div>
                     </div>
                 </div>
+                {{#shownextactivityoverlay}}
+                <div
+                    class="position-absolute top-0 start-0 w-100 h-100 d-none align-items-center justify-content-center p-3"
+                    data-region="next-activity-overlay"
+                    style="background: linear-gradient(135deg, rgba(7, 15, 28, 0.84), rgba(10, 25, 47, 0.68)); backdrop-filter: blur(8px);">
+                    <div class="text-center text-white p-4 rounded-4 shadow-lg" style="max-width: 28rem; background: rgba(15, 23, 42, 0.72); border: 1px solid rgba(255, 255, 255, 0.12);">
+                        <div class="text-uppercase small fw-semibold mb-2" style="letter-spacing: .12em; color: rgba(191, 219, 254, 0.9);">{{#str}}nextactivity, modernvideoplayer{{/str}}</div>
+                        <h3 class="h4 mb-2" data-region="next-activity-name">{{nextactivityname}}</h3>
+                        <p class="mb-4 text-white-50">{{#str}}nextactivitybody, modernvideoplayer{{/str}}</p>
+                        <div class="d-flex flex-column flex-sm-row justify-content-center gap-2" data-region="next-activity-actions">
+                            <a class="btn btn-primary px-4" href="{{nextactivityurl}}" data-action="next-activity-go">
+                                {{#str}}nextactivitycontinue, modernvideoplayer{{/str}}
+                            </a>
+                            <button type="button" class="btn btn-outline-light px-4" data-action="next-activity-replay">{{#str}}nextactivityreplay, modernvideoplayer{{/str}}</button>
+                        </div>
+                    </div>
+                </div>
+                {{/shownextactivityoverlay}}
                 {{>mod_modernvideoplayer/controls}}
             </div>
         </div>

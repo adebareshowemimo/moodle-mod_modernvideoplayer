@@ -75,6 +75,10 @@ function modernvideoplayer_get_defaults(): array {
         'allowplaybackspeed' => isset($config->defaultallowplaybackspeed) ? (int) $config->defaultallowplaybackspeed : 1,
         'maxplaybackspeed' => isset($config->defaultmaxplaybackspeed) ? (float) $config->defaultmaxplaybackspeed : 1.25,
         'allowresume' => isset($config->defaultresumeenabled) ? (int) $config->defaultresumeenabled : 1,
+        'allownextactivityoverlay' => isset($config->defaultallownextactivityoverlay)
+            ? (int) $config->defaultallownextactivityoverlay : 1,
+        'nextactivitytarget' => 'auto_next',
+        'nextactivitymanualcmid' => 0,
         'allowfullscreen' => isset($config->defaultfullscreenenabled) ? (int) $config->defaultfullscreenenabled : 1,
         'autoplay' => $autoplay,
         'defaultcaptionlang' => $defaultcaptionlang,
@@ -89,6 +93,151 @@ function modernvideoplayer_get_defaults(): array {
         'allowpip' => isset($config->defaultallowpip) ? (int) $config->defaultallowpip : 1,
         'allowtranscriptdownload' => isset($config->defaultallowtranscriptdownload)
             ? (int) $config->defaultallowtranscriptdownload : 1,
+    ];
+}
+
+/**
+ * Resolve the configured "next" activity for the end-of-video overlay.
+ *
+ * Honours a manual cmid pick when the instance is configured for it (and the
+ * picked module is still valid for standard Moodle activity navigation);
+ * otherwise walks forward through course modules in Moodle's display order.
+ * Falls back to the course view URL when no valid target is available.
+ *
+ * @param stdClass $course
+ * @param cm_info|stdClass $cm current course module
+ * @param stdClass $instance modernvideoplayer DB record
+ * @return array{name: string, url: string, isfallback: bool}
+ */
+function modernvideoplayer_get_next_activity(stdClass $course, $cm, stdClass $instance): array {
+    global $USER;
+
+    if (!empty($USER->id)) {
+        modernvideoplayer_sync_moodle_completion_for_user($course, $cm, $instance, (int) $USER->id);
+    }
+
+    $modinfo = get_fast_modinfo($course->id);
+    $target = $instance->nextactivitytarget ?? 'auto_next';
+
+    if ($target === 'manual' && !empty($instance->nextactivitymanualcmid)) {
+        $manualid = (int) $instance->nextactivitymanualcmid;
+        if (isset($modinfo->cms[$manualid])) {
+            $targetactivity = modernvideoplayer_next_activity_from_cm($modinfo->cms[$manualid]);
+            if ($targetactivity) {
+                return $targetactivity;
+            }
+        }
+        // Manual pick is gone or hidden - fall through to course fallback rather
+        // than silently auto-advancing past the teacher's explicit choice.
+        return modernvideoplayer_next_activity_fallback($course);
+    }
+
+    // course_modinfo::get_cms() returns cms "in order of appearance" across
+    // the whole course (including subsections), matching Moodle's standard
+    // activity navigation ordering.
+    $found = false;
+    foreach ($modinfo->get_cms() as $candidate) {
+        if ($found) {
+            $targetactivity = modernvideoplayer_next_activity_from_cm($candidate);
+            if ($targetactivity) {
+                return $targetactivity;
+            }
+            continue;
+        }
+        if ((int) $candidate->id === (int) $cm->id) {
+            $found = true;
+        }
+    }
+    return modernvideoplayer_next_activity_fallback($course);
+}
+
+/**
+ * Ensure Moodle completion reflects this plugin's completed playback state.
+ *
+ * Availability restrictions for the next course module read Moodle's
+ * course_modules_completion table, not modernvideoplayer_progress. Calling
+ * this before resolving the Continue target makes fresh page loads behave the
+ * same as the post-completion AJAX path.
+ *
+ * @param stdClass $course
+ * @param cm_info|stdClass $cm current course module
+ * @param stdClass $instance modernvideoplayer DB record
+ * @param int $userid user id
+ * @return bool true when the activity is complete after sync
+ */
+function modernvideoplayer_sync_moodle_completion_for_user(
+    stdClass $course,
+    $cm,
+    stdClass $instance,
+    int $userid
+): bool {
+    global $DB;
+
+    if ($userid <= 0 || (int) ($cm->completion ?? COMPLETION_TRACKING_NONE) !== COMPLETION_TRACKING_AUTOMATIC) {
+        return false;
+    }
+
+    $progress = $DB->get_record('modernvideoplayer_progress', [
+        'modernvideoplayerid' => $instance->id,
+        'userid' => $userid,
+    ]);
+    if (!$progress) {
+        return false;
+    }
+
+    $manager = new \mod_modernvideoplayer\local\completion_manager();
+    if (!$manager->is_complete($instance, $progress)) {
+        return false;
+    }
+
+    $completed = $manager->update($course, $cm, $instance, $progress);
+    if ($completed) {
+        $progress->timemodified = time();
+        $DB->update_record('modernvideoplayer_progress', $progress);
+        get_fast_modinfo((int) $course->id, 0, true);
+    }
+
+    return $completed;
+}
+
+/**
+ * Convert a course module into an end-of-video Continue target when Moodle's
+ * standard activity navigation would allow it.
+ *
+ * @param cm_info $candidate
+ * @return array{name: string, url: string, isfallback: bool}|null
+ */
+function modernvideoplayer_next_activity_from_cm(cm_info $candidate): ?array {
+    // Mirrors core_renderer::activity_navigation(): skip unavailable, stealth,
+    // URL-less, and non-display module types.
+    if (
+        !$candidate->uservisible ||
+        $candidate->is_stealth() ||
+        empty($candidate->url) ||
+        !$candidate->is_of_type_that_can_display()
+    ) {
+        return null;
+    }
+
+    $url = new moodle_url($candidate->url, ['forceview' => 1]);
+    return [
+        'name' => $candidate->get_formatted_name(),
+        'url' => $url->out(false),
+        'isfallback' => false,
+    ];
+}
+
+/**
+ * Default fallback target (course view) for the next-activity overlay.
+ *
+ * @param stdClass $course
+ * @return array{name: string, url: string, isfallback: bool}
+ */
+function modernvideoplayer_next_activity_fallback(stdClass $course): array {
+    return [
+        'name' => format_string($course->fullname),
+        'url' => (new moodle_url('/course/view.php', ['id' => $course->id]))->out(false),
+        'isfallback' => true,
     ];
 }
 

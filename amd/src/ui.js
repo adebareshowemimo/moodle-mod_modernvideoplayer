@@ -6,22 +6,28 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-export const updatePercent = (root, percent) => {
+export const updatePercent = (root, currentPercent, completionPercent = currentPercent, isCompleted = false) => {
     const label = root.querySelector('[data-region="percent-complete"]');
+    const badge = root.querySelector('[data-region="completion-badge"]');
     const progress = root.querySelector('[data-region="verified-progress"]');
     const thumb = root.querySelector('[data-region="timeline-thumb"]');
-    const safePercent = Math.max(0, Math.min(100, percent));
+    const safeCurrent = Math.max(0, Math.min(100, currentPercent));
+    const safeCompletion = Math.max(0, Math.min(100, completionPercent));
 
     if (label) {
-        label.textContent = `${Math.round(percent)}%`;
+        label.textContent = `${Math.round(safeCompletion)}%`;
+        label.classList.toggle('d-none', isCompleted);
+    }
+    if (badge) {
+        badge.classList.toggle('d-none', !isCompleted);
     }
     if (progress) {
-        progress.style.width = `${safePercent}%`;
-        progress.setAttribute('aria-valuenow', `${Math.round(percent)}`);
+        progress.style.width = `${safeCurrent}%`;
+        progress.setAttribute('aria-valuenow', `${Math.round(safeCurrent)}`);
     }
     if (thumb) {
-        thumb.style.left = `${safePercent}%`;
-        thumb.classList.toggle('d-none', safePercent <= 0);
+        thumb.style.left = `${safeCurrent}%`;
+        thumb.classList.toggle('d-none', safeCurrent <= 0);
     }
 };
 
@@ -112,16 +118,36 @@ export const formatTime = (seconds) => {
     return `${mins}:${String(secs).padStart(2, '0')}`;
 };
 
-export const showResumeOverlay = (root, heading, subtitle) => {
+export const showResumeOverlay = (root, heading, subtitle, options = {}) => {
     const overlay = root.querySelector('[data-region="resume-overlay"]');
     const headingEl = root.querySelector('[data-region="resume-heading"]');
     const subtitleEl = root.querySelector('[data-region="resume-subtitle"]');
+    const eyebrowEl = root.querySelector('[data-region="resume-eyebrow"]');
+    const buttonEl = root.querySelector('[data-action="resume-playback"]');
+    const restartEl = root.querySelector('[data-action="restart-playback"]');
+    const nextEl = root.querySelector('[data-action="resume-next-activity"]');
 
     if (headingEl) {
         headingEl.textContent = heading;
     }
     if (subtitleEl) {
         subtitleEl.textContent = subtitle;
+    }
+    if (eyebrowEl && typeof options.eyebrow === 'string') {
+        eyebrowEl.textContent = options.eyebrow;
+    }
+    if (buttonEl && typeof options.buttonLabel === 'string') {
+        buttonEl.textContent = options.buttonLabel;
+    }
+    // Both variants of this overlay share the same DOM, so the optional buttons are
+    // toggled per-call. The completed-replay variant suppresses "Start from beginning"
+    // (server-side reset) since completion is being preserved, and reveals the
+    // "next-activity" CTA. The in-progress resume variant gets neither override.
+    if (restartEl) {
+        restartEl.classList.toggle('d-none', options.showRestart === false);
+    }
+    if (nextEl) {
+        nextEl.classList.toggle('d-none', !options.showNextActivity);
     }
     if (overlay) {
         overlay.classList.remove('d-none');
@@ -131,6 +157,22 @@ export const showResumeOverlay = (root, heading, subtitle) => {
 
 export const hideResumeOverlay = (root) => {
     const overlay = root.querySelector('[data-region="resume-overlay"]');
+    if (overlay) {
+        overlay.classList.add('d-none');
+        overlay.classList.remove('d-flex');
+    }
+};
+
+export const showNextActivityOverlay = (root) => {
+    const overlay = root.querySelector('[data-region="next-activity-overlay"]');
+    if (overlay) {
+        overlay.classList.remove('d-none');
+        overlay.classList.add('d-flex');
+    }
+};
+
+export const hideNextActivityOverlay = (root) => {
+    const overlay = root.querySelector('[data-region="next-activity-overlay"]');
     if (overlay) {
         overlay.classList.add('d-none');
         overlay.classList.remove('d-flex');

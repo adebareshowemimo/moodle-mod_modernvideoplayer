@@ -25,21 +25,27 @@
 namespace mod_modernvideoplayer\local;
 
 use stdClass;
+
 /**
  * Reporting query helper.
  * @package mod_modernvideoplayer
  */
 class reporting {
+
     /**
-     * Return report rows and summaries.
+     * Build the shared WHERE clause + named-params for the report.
+     *
+     * Used by both `learners_table` (paginated row query) and
+     * `get_summary()` (aggregate KPIs) so the table and KPI cards always
+     * reflect the same filtered cohort.
      *
      * @param stdClass $instance activity instance
-     * @param string $completionfilter filter
-     * @param bool $suspiciousonly suspicious only
-     * @param string $search free text search
-     * @return array
+     * @param string $completionfilter 'all'|'completed'|'incomplete'
+     * @param bool $suspiciousonly suspicious-only checkbox state
+     * @param string $search free-text learner search
+     * @return array{0: string, 1: array} [where-fragment, named-params]
      */
-    public function get_report_data(
+    public static function build_filter(
         stdClass $instance,
         string $completionfilter = 'all',
         bool $suspiciousonly = false,
@@ -48,7 +54,7 @@ class reporting {
         global $DB;
 
         $conditions = ['p.modernvideoplayerid = :instanceid'];
-        $params = ['instanceid' => $instance->id];
+        $params = ['instanceid' => (int) $instance->id];
 
         if ($completionfilter === 'completed') {
             $conditions[] = 'p.completed = :completed';
@@ -63,59 +69,63 @@ class reporting {
         }
 
         if ($search !== '') {
+            $like = '%' . $DB->sql_like_escape($search) . '%';
             $conditions[] = '(' . $DB->sql_like('u.firstname', ':search1', false) .
                 ' OR ' . $DB->sql_like('u.lastname', ':search2', false) .
                 ' OR ' . $DB->sql_like('u.email', ':search3', false) . ')';
-            $params['search1'] = '%' . $DB->sql_like_escape($search) . '%';
-            $params['search2'] = '%' . $DB->sql_like_escape($search) . '%';
-            $params['search3'] = '%' . $DB->sql_like_escape($search) . '%';
+            $params['search1'] = $like;
+            $params['search2'] = $like;
+            $params['search3'] = $like;
         }
 
-        $where = implode(' AND ', $conditions);
-        $userfields = \core_user\fields::for_name()
-            ->with_userpic(false)
-            ->including('email')
-            ->get_sql('u', false, '', '', false)
-            ->selects;
-        $sql = "SELECT p.*, {$userfields}
-                  FROM {modernvideoplayer_progress} p
-                  JOIN {user} u ON u.id = p.userid
-                 WHERE {$where}
-              ORDER BY u.lastname, u.firstname";
-
-        $rows = array_values($DB->get_records_sql($sql, $params));
-        $summary = $this->build_summary($rows);
-
-        return [$rows, $summary];
+        return [implode(' AND ', $conditions), $params];
     }
 
     /**
-     * Build summary values.
+     * Compute KPI totals for the filtered cohort via a single aggregate query.
      *
-     * @param array $rows report rows
-     * @return array
+     * Replaces the previous PHP-side fold over a fully-loaded row set so the
+     * KPI cards stay correct when the table itself is paginated and only
+     * holds one page of rows in PHP at a time.
+     *
+     * @param stdClass $instance activity instance
+     * @param string $completionfilter 'all'|'completed'|'incomplete'
+     * @param bool $suspiciousonly suspicious-only checkbox state
+     * @param string $search free-text learner search
+     * @return array {totallearners,completedlearners,completionrate,averagecoverage,suspiciousflags,integrityfailures}
      */
-    protected function build_summary(array $rows): array {
-        $count = count($rows);
-        $completed = 0;
-        $totalsuspicious = 0;
-        $totalintegrity = 0;
-        $totalcoverage = 0.0;
+    public function get_summary(
+        stdClass $instance,
+        string $completionfilter = 'all',
+        bool $suspiciousonly = false,
+        string $search = ''
+    ): array {
+        global $DB;
 
-        foreach ($rows as $row) {
-            $completed += (int) $row->completed;
-            $totalsuspicious += (int) $row->suspiciousflags;
-            $totalintegrity += (int) $row->integrityfailures;
-            $totalcoverage += (float) $row->percentcomplete;
-        }
+        [$where, $params] = self::build_filter(
+            $instance, $completionfilter, $suspiciousonly, $search);
+
+        $sql = "SELECT
+                    COUNT(1) AS totallearners,
+                    COALESCE(SUM(CASE WHEN p.completed = 1 THEN 1 ELSE 0 END), 0) AS completedlearners,
+                    COALESCE(AVG(p.percentcomplete), 0) AS averagecoverage,
+                    COALESCE(SUM(p.suspiciousflags), 0) AS suspiciousflags,
+                    COALESCE(SUM(p.integrityfailures), 0) AS integrityfailures
+                  FROM {modernvideoplayer_progress} p
+                  JOIN {user} u ON u.id = p.userid
+                 WHERE $where";
+
+        $row = $DB->get_record_sql($sql, $params);
+        $count = (int) ($row->totallearners ?? 0);
+        $completed = (int) ($row->completedlearners ?? 0);
 
         return [
             'totallearners' => $count,
             'completedlearners' => $completed,
             'completionrate' => $count ? round(($completed / $count) * 100, 2) : 0.0,
-            'averagecoverage' => $count ? round($totalcoverage / $count, 2) : 0.0,
-            'suspiciousflags' => $totalsuspicious,
-            'integrityfailures' => $totalintegrity,
+            'averagecoverage' => round((float) ($row->averagecoverage ?? 0), 2),
+            'suspiciousflags' => (int) ($row->suspiciousflags ?? 0),
+            'integrityfailures' => (int) ($row->integrityfailures ?? 0),
         ];
     }
 }

@@ -31,7 +31,7 @@ export const markComplete = (config, video, state) => Ajax.call([{
     }
 }])[0];
 
-export const start = (config, video, state, onUpdate) => {
+export const start = (config, video, state, onUpdate, onComplete = null) => {
     const interval = Math.max(5000, (state.heartbeatinterval || 15) * 1000);
     let inflight = false;
     let lastsentat = 0;
@@ -116,6 +116,9 @@ export const start = (config, video, state, onUpdate) => {
             state.completed = response.completed;
             state.percentcomplete = response.percentcomplete;
             onUpdate(response);
+            if (typeof onComplete === 'function') {
+                onComplete(response);
+            }
             return undefined;
         }).catch(() => {
             window.console.warn(config.strings.progressunavailable);

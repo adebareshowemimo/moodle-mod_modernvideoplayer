@@ -41,7 +41,7 @@ Everything below is in the free GPL build — no license key, no upsell wall.
   title position, right-blocks toggle, course-index toggle
 - **Autoplay modes**: off / muted / unmuted (with muted fallback when the
   browser blocks sound)
-- External URL source **or** uploaded MP4 (file API + repository integration)
+- Uploaded video via Moodle File API and repository-backed file picker
 - Learner-facing **playback-speed menu** with admin-configurable maximum
 - **Keyboard shortcuts**: space, arrows, `J`/`K`/`L`, `M`, `F`, digit-seek
   (all gated by Focus Mode)
@@ -74,8 +74,9 @@ Everything below is in the free GPL build — no license key, no upsell wall.
 - Heartbeat + **segment tracking** → accurate viewed-percentage (not native
   `timeupdate` approximation)
 - Custom completion rule: **watched at least N %** (v0.7.0)
+- Optional completion rule: **require validated video ending**
 - Availability condition to gate downstream activities on watch progress
-- Partial / full / forced completion modes
+- Moodle activity completion integration using validated playback state
 
 ### Gradebook integration (v0.8.0)
 - Activity grade item driven by watched-percentage
@@ -112,12 +113,12 @@ Everything below is in the free GPL build — no license key, no upsell wall.
 > `db/mobile.php` remote-addons bundle is not included in this release.
 
 ### Quality bar
-- **42 PHPUnit tests / 115 assertions** covering defaults, completion rules,
-  gradebook writeback, bookmarks CRUD + ownership, privacy export/delete,
-  Focus Mode fields
-- **Behat acceptance scenarios** for activity creation + Focus Mode settings
-- GitHub Actions CI (`moodle-plugin-ci`) green on Moodle 4.5 and 5.0
-- Moodle coding style clean (`phpcs --standard=moodle`)
+- **48 PHPUnit tests / 129 assertions** for defaults, completion rules, gradebook writeback,
+  bookmarks CRUD + ownership, privacy export/delete, and Focus Mode fields
+- Behat scenarios for activity creation and Focus Mode settings
+- GitHub Actions workflows for build and automated test runs
+- Moodle coding-style and release validation should be run before packaging a
+  repository submission
 
 ## Requirements
 
@@ -153,13 +154,15 @@ You can set site-wide defaults for:
 - Playback speed allowed
 - Seek tolerance (seconds)
 - Completion threshold (%)
+- Focused-view navigation and drawer defaults
 
 ## Instructor usage
 
 1. Turn editing on in a course.
 2. **Add an activity or resource → Modern video player**.
-3. Upload an MP4 (or paste an external URL).
-4. Set completion rule (e.g. watched ≥ 80 %) and save.
+3. Upload a video file from your computer or Moodle file picker.
+4. Configure playback, enforcement, completion, and navigation/drawer settings as needed.
+5. Set completion rule (for example watched ≥ 80% and/or validated ending) and save.
 
 Learners get a clean player; instructors get a report at
 *Course → Activity → Report*.

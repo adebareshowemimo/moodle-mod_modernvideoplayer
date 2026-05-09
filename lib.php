@@ -579,3 +579,35 @@ function modernvideoplayer_update_grades(stdClass $instance, int $userid = 0, bo
 
     return modernvideoplayer_grade_item_update($instance);
 }
+
+/**
+ * Add a "Report" entry to the activity's settings/secondary navigation.
+ *
+ * @param settings_navigation $settings settings navigation
+ * @param navigation_node $modernvideoplayernode this module's nav node
+ * @return void
+ */
+function modernvideoplayer_extend_settings_navigation(
+    settings_navigation $settings,
+    navigation_node $modernvideoplayernode
+): void {
+    $cm = $settings->get_page()->cm;
+    if (!$cm) {
+        return;
+    }
+    $context = $cm->context;
+    if (!has_capability('mod/modernvideoplayer:viewreports', $context)) {
+        return;
+    }
+
+    $url = new moodle_url('/mod/modernvideoplayer/report.php', ['id' => $cm->id]);
+    $node = navigation_node::create(
+        get_string('report', 'modernvideoplayer'),
+        $url,
+        navigation_node::TYPE_SETTING,
+        null,
+        'mod_modernvideoplayer_report',
+        new pix_icon('i/report', '')
+    );
+    $modernvideoplayernode->add_node($node);
+}

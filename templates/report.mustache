@@ -1,21 +1,31 @@
 {{!
     @template mod_modernvideoplayer/report
 
-    Reporting dashboard for a single mod_modernvideoplayer instance.
+    Reporting summary cards + filter strip for a single mod_modernvideoplayer
+    instance. The data table itself is rendered by `learners_table` (table_sql)
+    immediately after this template, so it is NOT part of this template — that
+    is what gives us pagination, sortable headers, and CSV/Excel/ODS download
+    for free.
 
     Context variables required for this template:
     * id - course module id (int)
     * filterurl - non-empty form action URL (string)
+    * clearurl - URL that clears all filters (string)
+    * hasactivefilters - whether any non-default filter is set (bool)
     * totallearners, completedlearners, completionrate, averagecoverage,
       suspiciousflags, integrityfailures - aggregate KPIs (string|int)
-    * search, filter - current filter values (string)
-    * downloadurl - URL of the CSV export (string)
-    * rows - array of learner rows (array)
+    * search - current search filter value (string)
+    * isall, iscompleted, isincomplete - completion-filter selection flags (bool)
+    * suspiciousonly - suspicious-only checkbox state (bool)
+    * pagesize - currently selected page size (int)
+    * pagesizes - [{value:int, selected:bool}, ...] options for the dropdown
 
     Example context (json):
     {
         "id": 42,
-        "filterurl": "/mod/modernvideoplayer/view.php",
+        "filterurl": "/mod/modernvideoplayer/report.php",
+        "clearurl": "/mod/modernvideoplayer/report.php?id=42",
+        "hasactivefilters": false,
         "totallearners": 25,
         "completedlearners": 17,
         "completionrate": "68%",
@@ -23,9 +33,12 @@
         "suspiciousflags": 2,
         "integrityfailures": 0,
         "search": "",
-        "filter": "all",
-        "downloadurl": "/mod/modernvideoplayer/view.php?id=42&download=csv",
-        "rows": []
+        "isall": true,
+        "iscompleted": false,
+        "isincomplete": false,
+        "suspiciousonly": false,
+        "pagesize": 25,
+        "pagesizes": [{"value":10,"selected":false},{"value":25,"selected":true}]
     }
 }}
 <div class="row g-3 mb-4">
@@ -40,7 +53,7 @@
 <form action="{{filterurl}}" method="get" class="card card-body mb-4">
     <input type="hidden" name="id" value="{{id}}">
     <div class="row g-3 align-items-end">
-        <div class="col-md-4">
+        <div class="col-md-3">
             <label class="form-label" for="id_completionfilter">{{#str}}filtercompletion, modernvideoplayer{{/str}}</label>
             <select class="custom-select form-select" name="completionfilter" id="id_completionfilter">
                 <option value="all" {{#isall}}selected{{/isall}}>{{#str}}filterall, modernvideoplayer{{/str}}</option>
@@ -48,9 +61,17 @@
                 <option value="incomplete" {{#isincomplete}}selected{{/isincomplete}}>{{#str}}filterincomplete, modernvideoplayer{{/str}}</option>
             </select>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <label class="form-label" for="id_search">{{#str}}filtersearch, modernvideoplayer{{/str}}</label>
             <input class="form-control" type="text" name="search" id="id_search" value="{{search}}">
+        </div>
+        <div class="col-md-2">
+            <label class="form-label" for="id_pagesize">{{#str}}pagesize, modernvideoplayer{{/str}}</label>
+            <select class="custom-select form-select" name="pagesize" id="id_pagesize">
+                {{#pagesizes}}
+                    <option value="{{value}}" {{#selected}}selected{{/selected}}>{{value}}</option>
+                {{/pagesizes}}
+            </select>
         </div>
         <div class="col-md-2">
             <div class="form-check mb-2">
@@ -60,55 +81,9 @@
         </div>
         <div class="col-md-2 d-flex gap-2">
             <button class="btn btn-primary" type="submit">{{#str}}filterapply, modernvideoplayer{{/str}}</button>
-            <a class="btn btn-secondary" href="{{downloadurl}}">{{#str}}downloadcsv, modernvideoplayer{{/str}}</a>
+            {{#hasactivefilters}}
+                <a class="btn btn-link" href="{{clearurl}}">{{#str}}filterclear, modernvideoplayer{{/str}}</a>
+            {{/hasactivefilters}}
         </div>
     </div>
 </form>
-
-{{^hasentries}}
-    <div class="alert alert-info">{{#str}}noentries, modernvideoplayer{{/str}}</div>
-{{/hasentries}}
-{{#hasentries}}
-    <div class="table-responsive">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>{{#str}}fullname, modernvideoplayer{{/str}}</th>
-                    <th>{{#str}}email, modernvideoplayer{{/str}}</th>
-                    <th>{{#str}}duration, modernvideoplayer{{/str}}</th>
-                    <th>{{#str}}lastposition, modernvideoplayer{{/str}}</th>
-                    <th>{{#str}}maxverifiedposition, modernvideoplayer{{/str}}</th>
-                    <th>{{#str}}totalsecondswatched, modernvideoplayer{{/str}}</th>
-                    <th>{{#str}}percentcomplete, modernvideoplayer{{/str}}</th>
-                    <th>{{#str}}completed, modernvideoplayer{{/str}}</th>
-                    <th>{{#str}}completiontime, modernvideoplayer{{/str}}</th>
-                    <th>{{#str}}lastheartbeat, modernvideoplayer{{/str}}</th>
-                    <th>{{#str}}lastplaybackrate, modernvideoplayer{{/str}}</th>
-                    <th>{{#str}}lastvisibility, modernvideoplayer{{/str}}</th>
-                    <th>{{#str}}suspiciousflags, modernvideoplayer{{/str}}</th>
-                    <th>{{#str}}integrityfailures, modernvideoplayer{{/str}}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#entries}}
-                    <tr>
-                        <td>{{fullname}}</td>
-                        <td>{{email}}</td>
-                        <td>{{duration}}</td>
-                        <td>{{lastposition}}</td>
-                        <td>{{maxverifiedposition}}</td>
-                        <td>{{totalsecondswatched}}</td>
-                        <td>{{percentcomplete}}</td>
-                        <td>{{completed}}</td>
-                        <td>{{completiontime}}</td>
-                        <td>{{lastheartbeat}}</td>
-                        <td>{{lastplaybackrate}}</td>
-                        <td>{{lastvisibility}}</td>
-                        <td>{{suspiciousflags}}</td>
-                        <td>{{integrityfailures}}</td>
-                    </tr>
-                {{/entries}}
-            </tbody>
-        </table>
-    </div>
-{{/hasentries}}
