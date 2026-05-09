@@ -51,17 +51,12 @@ $pageparams = [
 
 $baseurl = new moodle_url('/mod/modernvideoplayer/report.php', $pageparams);
 
-// ---------- Download negotiation ----------
-// table_sql sets HTTP headers in `is_downloading()`, so this MUST run before
-// any output (header / heading / template render). The screen path falls
-// through with `is_downloading() === ''`.
-$table = new learners_table('mod-modernvideoplayer-learners',
-    $instance, $completionfilter, (bool) $suspiciousonly, $search);
+// Download negotiation must run before any page output.
+$table = new learners_table('mod-modernvideoplayer-learners', $instance, $completionfilter, (bool) $suspiciousonly, $search);
 $table->define_baseurl($baseurl);
 $table->is_downloadable(true);
 $table->show_download_buttons_at([TABLE_P_BOTTOM]);
-$filename = clean_filename(
-    get_string('downloadreportfilename', 'modernvideoplayer') . '-' . $cm->id);
+$filename = clean_filename(get_string('downloadreportfilename', 'modernvideoplayer') . '-' . $cm->id);
 $table->is_downloading($download, $filename, format_string($instance->name));
 
 if ($table->is_downloading()) {
@@ -77,8 +72,7 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_pagelayout('report');
 
 $service = new reporting();
-$summary = $service->get_summary(
-    $instance, $completionfilter, (bool) $suspiciousonly, $search);
+$summary = $service->get_summary($instance, $completionfilter, (bool) $suspiciousonly, $search);
 
 $renderer = $PAGE->get_renderer('mod_modernvideoplayer');
 
@@ -107,7 +101,7 @@ echo $renderer->render_report([
     'hasactivefilters' => $completionfilter !== 'all' || $suspiciousonly || $search !== '' || $pagesize !== 25,
 ]);
 
-// table_sql echoes its own pagination, sortable headers, and download buttons.
+// Table_sql echoes its own pagination, sortable headers, and download buttons.
 $table->out($pagesize, true);
 
 echo $OUTPUT->footer();

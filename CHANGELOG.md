@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Planned
 - Learner activity report (per-user watch progress export)
 
+## [1.3.1] - 2026-05-09
+
+### Fixed
+- Moodle 4.5 PHPUnit compatibility for next-activity resolution by removing a
+  Moodle 5.2-only `cm_info` API call.
+- Moodle codechecker failures in reporting, report table, upgrade, report page,
+  and activity form formatting.
+
 ## [1.3.0] - 2026-05-09
 
 ### Added

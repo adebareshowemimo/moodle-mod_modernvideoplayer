@@ -132,7 +132,7 @@ function modernvideoplayer_get_next_activity(stdClass $course, $cm, stdClass $in
         return modernvideoplayer_next_activity_fallback($course);
     }
 
-    // course_modinfo::get_cms() returns cms "in order of appearance" across
+    // Course_modinfo::get_cms() returns cms "in order of appearance" across
     // the whole course (including subsections), matching Moodle's standard
     // activity navigation ordering.
     $found = false;
@@ -208,13 +208,12 @@ function modernvideoplayer_sync_moodle_completion_for_user(
  * @return array{name: string, url: string, isfallback: bool}|null
  */
 function modernvideoplayer_next_activity_from_cm(cm_info $candidate): ?array {
-    // Mirrors core_renderer::activity_navigation(): skip unavailable, stealth,
-    // URL-less, and non-display module types.
+    // Mirrors core navigation on Moodle 4.5+: skip unavailable, stealth,
+    // and URL-less module types.
     if (
         !$candidate->uservisible ||
         $candidate->is_stealth() ||
-        empty($candidate->url) ||
-        !$candidate->is_of_type_that_can_display()
+        empty($candidate->url)
     ) {
         return null;
     }

@@ -37,7 +37,6 @@ require_once($CFG->libdir . '/tablelib.php');
  * click-to-sort, and CSV/Excel/ODS download for free.
  */
 class learners_table extends table_sql {
-
     /**
      * Build the table.
      *
@@ -75,15 +74,18 @@ class learners_table extends table_sql {
         $this->define_columns(array_keys($columns));
         $this->define_headers(array_values($columns));
 
-        // `fullname` is composed in PHP and has no SQL alias to ORDER BY,
-        // so disable sorting on that header. Default sort uses lastname asc.
+        // So disable sorting on that header. Default sort uses lastname asc.
         $this->no_sorting('fullname');
         $this->collapsible(false);
         $this->sortable(true, 'lastname', SORT_ASC);
         $this->set_attribute('class', 'generaltable mod-modernvideoplayer-report-table');
 
         [$where, $params] = reporting::build_filter(
-            $instance, $completionfilter, $suspiciousonly, $search);
+            $instance,
+            $completionfilter,
+            $suspiciousonly,
+            $search
+        );
 
         // Pull all `core_user` name fields plus email; aliased without prefix
         // so `lastname`, `firstname`, etc. land on the row directly — that
@@ -92,14 +94,16 @@ class learners_table extends table_sql {
             ->including('email')
             ->get_sql('u', false, '', '', false);
 
-        // `get_sql(..., false)` returns selects without a leading comma, so
+        // Get_sql(..., false) returns selects without a leading comma, so
         // we have to put one in ourselves between `p.*` and the user fields.
         $fields = 'p.*, ' . $userfields->selects;
         $from = '{modernvideoplayer_progress} p JOIN {user} u ON u.id = p.userid';
 
         $this->set_sql($fields, $from, $where, $params);
         $this->set_count_sql(
-            "SELECT COUNT(1) FROM $from WHERE $where", $params);
+            "SELECT COUNT(1) FROM $from WHERE $where",
+            $params
+        );
     }
 
     /**

@@ -6,6 +6,12 @@ The canonical, full changelog lives in [CHANGELOG.md](CHANGELOG.md) — this fil
 exists because the Moodle Plugins Directory uploader prefills release notes
 from a file named exactly `CHANGES.md` / `CHANGES` / `CHANGES.txt`.
 
+## 1.3.1 - 2026-05-09
+
+### Fixed
+- Fixed Moodle 4.5 PHPUnit compatibility in next-activity resolution.
+- Fixed Moodle codechecker formatting failures across the release changes.
+
 ## 1.3.0 - 2026-05-09
 
 ### Added

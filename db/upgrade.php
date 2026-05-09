@@ -225,12 +225,36 @@ function xmldb_modernvideoplayer_upgrade(int $oldversion): bool {
         // End-of-video "next activity" overlay: enable flag, target mode, manual cmid.
         $table = new xmldb_table('modernvideoplayer');
         $fields = [
-            new xmldb_field('allownextactivityoverlay', XMLDB_TYPE_INTEGER, '4', null,
-                XMLDB_NOTNULL, null, '1', 'allowtranscriptdownload'),
-            new xmldb_field('nextactivitytarget', XMLDB_TYPE_CHAR, '16', null,
-                XMLDB_NOTNULL, null, 'auto_next', 'allownextactivityoverlay'),
-            new xmldb_field('nextactivitymanualcmid', XMLDB_TYPE_INTEGER, '10', null,
-                XMLDB_NOTNULL, null, '0', 'nextactivitytarget'),
+            new xmldb_field(
+                'allownextactivityoverlay',
+                XMLDB_TYPE_INTEGER,
+                '4',
+                null,
+                XMLDB_NOTNULL,
+                null,
+                '1',
+                'allowtranscriptdownload'
+            ),
+            new xmldb_field(
+                'nextactivitytarget',
+                XMLDB_TYPE_CHAR,
+                '16',
+                null,
+                XMLDB_NOTNULL,
+                null,
+                'auto_next',
+                'allownextactivityoverlay'
+            ),
+            new xmldb_field(
+                'nextactivitymanualcmid',
+                XMLDB_TYPE_INTEGER,
+                '10',
+                null,
+                XMLDB_NOTNULL,
+                null,
+                '0',
+                'nextactivitytarget'
+            ),
         ];
         foreach ($fields as $field) {
             if (!$dbman->field_exists($table, $field)) {

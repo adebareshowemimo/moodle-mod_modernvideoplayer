@@ -31,7 +31,6 @@ use stdClass;
  * @package mod_modernvideoplayer
  */
 class reporting {
-
     /**
      * Build the shared WHERE clause + named-params for the report.
      *
@@ -103,7 +102,11 @@ class reporting {
         global $DB;
 
         [$where, $params] = self::build_filter(
-            $instance, $completionfilter, $suspiciousonly, $search);
+            $instance,
+            $completionfilter,
+            $suspiciousonly,
+            $search
+        );
 
         $sql = "SELECT
                     COUNT(1) AS totallearners,

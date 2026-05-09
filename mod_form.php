@@ -86,16 +86,23 @@ class mod_modernvideoplayer_mod_form extends moodleform_mod {
         $mform->addElement('advcheckbox', 'allowresume', get_string('resumeenabled', 'modernvideoplayer'));
         $mform->setDefault('allowresume', $defaults['allowresume']);
 
-        $mform->addElement('advcheckbox', 'allownextactivityoverlay',
-            get_string('allownextactivityoverlay', 'modernvideoplayer'));
+        $mform->addElement(
+            'advcheckbox',
+            'allownextactivityoverlay',
+            get_string('allownextactivityoverlay', 'modernvideoplayer')
+        );
         $mform->setDefault('allownextactivityoverlay', $defaults['allownextactivityoverlay']);
         $mform->addHelpButton('allownextactivityoverlay', 'allownextactivityoverlay', 'modernvideoplayer');
 
-        $mform->addElement('select', 'nextactivitytarget',
-            get_string('nextactivitytarget', 'modernvideoplayer'), [
+        $mform->addElement(
+            'select',
+            'nextactivitytarget',
+            get_string('nextactivitytarget', 'modernvideoplayer'),
+            [
                 'auto_next' => get_string('nextactivitytarget_auto', 'modernvideoplayer'),
                 'manual'    => get_string('nextactivitytarget_manual', 'modernvideoplayer'),
-            ]);
+            ]
+        );
         $mform->setDefault('nextactivitytarget', $defaults['nextactivitytarget']);
         $mform->hideIf('nextactivitytarget', 'allownextactivityoverlay', 'eq', 0);
 
@@ -121,8 +128,11 @@ class mod_modernvideoplayer_mod_form extends moodleform_mod {
         // hidden, lost its view). Otherwise the autocomplete silently falls
         // back to the placeholder, looking like the saved value was lost.
         if (!empty($this->_instance)) {
-            $savedcmid = (int) $DB->get_field('modernvideoplayer', 'nextactivitymanualcmid',
-                ['id' => (int) $this->_instance]);
+            $savedcmid = (int) $DB->get_field(
+                'modernvideoplayer',
+                'nextactivitymanualcmid',
+                ['id' => (int) $this->_instance]
+            );
             if ($savedcmid > 0 && !array_key_exists($savedcmid, $cmoptions)) {
                 $savedcm = get_coursemodule_from_id('', $savedcmid, 0, false, IGNORE_MISSING);
                 $cmoptions[$savedcmid] = $savedcm
@@ -134,10 +144,13 @@ class mod_modernvideoplayer_mod_form extends moodleform_mod {
         // Autocomplete element gives client-side type-ahead filtering — needed
         // once a course has hundreds of activities. Empty submission → setType
         // PARAM_INT coerces to 0.
-        $mform->addElement('autocomplete', 'nextactivitymanualcmid',
+        $mform->addElement(
+            'autocomplete',
+            'nextactivitymanualcmid',
             get_string('nextactivitymanualcmid', 'modernvideoplayer'),
             $cmoptions,
-            ['noselectionstring' => get_string('choosedots')]);
+            ['noselectionstring' => get_string('choosedots')]
+        );
         $mform->setType('nextactivitymanualcmid', PARAM_INT);
         $mform->setDefault('nextactivitymanualcmid', $defaults['nextactivitymanualcmid']);
         $mform->hideIf('nextactivitymanualcmid', 'allownextactivityoverlay', 'eq', 0);
