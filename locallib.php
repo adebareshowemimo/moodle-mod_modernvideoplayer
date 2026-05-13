@@ -81,6 +81,7 @@ function modernvideoplayer_get_defaults(): array {
         'nextactivitymanualcmid' => 0,
         'allowfullscreen' => isset($config->defaultfullscreenenabled) ? (int) $config->defaultfullscreenenabled : 1,
         'autoplay' => $autoplay,
+        'allowcaptions' => isset($config->defaultallowcaptions) ? (int) $config->defaultallowcaptions : 1,
         'defaultcaptionlang' => $defaultcaptionlang,
         'showprimarynav' => isset($config->defaultshowprimarynav) ? (int) $config->defaultshowprimarynav : 1,
         'showsecondarynav' => isset($config->defaultshowsecondarynav) ? (int) $config->defaultshowsecondarynav : 1,

@@ -24,6 +24,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['allowcaptions'] = 'Enable caption tracks (WebVTT)';
+$string['allowcaptions_help'] = 'When enabled, uploaded WebVTT caption files are available in the player ' .
+    'controls, transcript panel, and keyboard shortcuts. When disabled, caption files remain saved but are not ' .
+    'shown to learners.';
 $string['allowfullscreen'] = 'Allow fullscreen';
 $string['allownextactivityoverlay'] = 'Show "next activity" overlay when video ends';
 $string['allownextactivityoverlay_help'] = 'When enabled, an overlay appears at the end of the video with **Replay** ' .
@@ -49,7 +53,7 @@ $string['autoplayunmuted'] = 'Unmuted (muted fallback if blocked)';
 $string['bookmarklabelrequired'] = 'Bookmarks must have a non-empty label.';
 $string['bookmarklimitreached'] = 'You have reached the maximum number of bookmarks for this video.';
 $string['bufferedlabel'] = 'Buffered';
-$string['captions'] = 'Caption tracks (WebVTT)';
+$string['captions'] = 'Caption files (WebVTT)';
 $string['captions_help'] = 'Upload one or more WebVTT (.vtt) caption files. Learners can turn captions on or off with the **CC** button in the player controls.
 
 To support multiple languages, include the language code in the filename using a dot, hyphen, or underscore suffix just before the .vtt extension. For example:
@@ -85,6 +89,7 @@ $string['completionvideopercent'] = 'Require video watch percentage';
 $string['completionvideopercentdesc'] = 'Learner must watch at least {$a}% of the video';
 $string['completionvideopercentgroup'] = 'Require video watch percentage';
 $string['currentchapter'] = 'Current chapter: {$a}';
+$string['defaultallowcaptions'] = 'Enable caption tracks by default';
 $string['defaultallownextactivityoverlay'] = 'Show next-activity overlay by default';
 $string['defaultallowplaybackspeed'] = 'Allow playback speed control by default';
 $string['defaultautoplay'] = 'Default autoplay mode';
@@ -115,7 +120,8 @@ $string['enforcefocus_help'] = 'When enabled, the plugin actively prevents the l
 * Keyboard shortcuts that skip or scrub the video (J/L, arrow keys, 0-9, < >) are ignored.
 * When the browser tab is hidden the video is paused automatically.
 
-Play/pause, fullscreen, captions, chapters and the shortcuts-help dialog still work so the learner retains accessibility controls.';
+Play/pause, fullscreen, enabled captions, chapters and the shortcuts-help dialog still work so the learner ' .
+    'retains accessibility controls.';
 $string['enforcementsettings'] = 'Enforcement settings';
 $string['eventcompletionachieved'] = 'Playback completion achieved';
 $string['eventplayerviewed'] = 'Modern video player viewed';

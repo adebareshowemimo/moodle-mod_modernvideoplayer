@@ -43,6 +43,7 @@ final class focus_mode_test extends \advanced_testcase {
 
         $this->assertSame(0, (int) $instance->enforcefocus);
         $this->assertSame(1, (int) $instance->allowpip);
+        $this->assertSame(1, (int) $instance->allowcaptions);
         $this->assertSame(1, (int) $instance->allowtranscriptdownload);
     }
 
@@ -60,12 +61,14 @@ final class focus_mode_test extends \advanced_testcase {
             'course'                  => $course->id,
             'enforcefocus'            => 1,
             'allowpip'                => 0,
+            'allowcaptions'           => 0,
             'allowtranscriptdownload' => 0,
         ]);
         $instance = $DB->get_record('modernvideoplayer', ['id' => $module->id], '*', MUST_EXIST);
 
         $this->assertSame(1, (int) $instance->enforcefocus);
         $this->assertSame(0, (int) $instance->allowpip);
+        $this->assertSame(0, (int) $instance->allowcaptions);
         $this->assertSame(0, (int) $instance->allowtranscriptdownload);
     }
 
@@ -82,17 +85,21 @@ final class focus_mode_test extends \advanced_testcase {
         $defaults = modernvideoplayer_get_defaults();
         $this->assertArrayHasKey('enforcefocus', $defaults);
         $this->assertArrayHasKey('allowpip', $defaults);
+        $this->assertArrayHasKey('allowcaptions', $defaults);
         $this->assertArrayHasKey('allowtranscriptdownload', $defaults);
         $this->assertSame(0, $defaults['enforcefocus']);
         $this->assertSame(1, $defaults['allowpip']);
+        $this->assertSame(1, $defaults['allowcaptions']);
         $this->assertSame(1, $defaults['allowtranscriptdownload']);
 
         set_config('defaultenforcefocus', 1, 'modernvideoplayer');
         set_config('defaultallowpip', 0, 'modernvideoplayer');
+        set_config('defaultallowcaptions', 0, 'modernvideoplayer');
         set_config('defaultallowtranscriptdownload', 0, 'modernvideoplayer');
         $overridden = modernvideoplayer_get_defaults();
         $this->assertSame(1, $overridden['enforcefocus']);
         $this->assertSame(0, $overridden['allowpip']);
+        $this->assertSame(0, $overridden['allowcaptions']);
         $this->assertSame(0, $overridden['allowtranscriptdownload']);
     }
 }

@@ -2,7 +2,7 @@
 Feature: Focus Mode enforcement settings
   In order to keep learners focused on the video
   As a teacher
-  I need to be able to enable Focus Mode and toggle Picture-in-Picture and transcript download
+  I need to be able to enable Focus Mode and toggle Picture-in-Picture, captions, and transcript download
 
   Background:
     Given the following "courses" exist:
@@ -18,9 +18,10 @@ Feature: Focus Mode enforcement settings
       | activity          | course | name       | idnumber  |
       | modernvideoplayer | C1     | Focus demo | focusdemo |
 
-  Scenario: The Enforcement settings section exposes the Focus Mode toggles with the expected defaults
+  Scenario: The activity editing form exposes the media toggles with the expected defaults
     When I am on the "focusdemo" "Activity editing" page logged in as "admin"
     And I expand all fieldsets
     Then the field "enforcefocus" matches value "0"
     And the field "allowpip" matches value "1"
+    And the field "allowcaptions" matches value "1"
     And the field "allowtranscriptdownload" matches value "1"

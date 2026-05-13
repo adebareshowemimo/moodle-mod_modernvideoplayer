@@ -31,7 +31,7 @@
  *   0..9           Seek to N*10 % of the video (respects allowedposition)
  *   < or ,         Speed down one step (if allowplaybackspeed)
  *   > or .         Speed up one step (if allowplaybackspeed, clamped by maxplaybackspeed)
- *   C              Toggle captions
+ *   C              Toggle captions (when captions are available)
  *   ?              Show shortcuts help dialog
  *
  * @module     mod_modernvideoplayer/shortcuts
@@ -90,6 +90,7 @@ export const init = (root, video, state, config) => {
     const helpDialog = root.querySelector('[data-region="shortcuts-help"]');
     const helpClose = root.querySelector('[data-action="close-shortcuts-help"]');
     const helpButton = root.querySelector('[data-action="toggle-shortcuts-help"]');
+    const hasCaptions = !!config.hascaptions;
 
     const stepSpeed = (dir) => {
         if (!state.allowplaybackspeed) {
@@ -230,6 +231,9 @@ export const init = (root, video, state, config) => {
                 break;
             case 'c':
             case 'C':
+                if (!hasCaptions) {
+                    return;
+                }
                 ev.preventDefault();
                 cycleCaptions();
                 break;

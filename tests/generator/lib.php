@@ -46,6 +46,7 @@ class mod_modernvideoplayer_generator extends testing_module_generator {
             'allowrewind' => 1,
             'allowfullscreen' => 1,
             'autoplay' => 'unmuted',
+            'allowcaptions' => 1,
             'defaultcaptionlang' => 'en',
             'showprimarynav' => 0,
             'showsecondarynav' => 0,

@@ -38,7 +38,7 @@ class backup_modernvideoplayer_activity_structure_step extends backup_activity_s
         $modernvideoplayer = new backup_nested_element('modernvideoplayer', ['id'], [
             'name', 'intro', 'introformat', 'videoitemid', 'posteritemid', 'requiredpercent',
             'completionmode', 'allowresume', 'allowrewind', 'allowfullscreen', 'autoplay',
-            'defaultcaptionlang', 'allowplaybackspeed',
+            'allowcaptions', 'defaultcaptionlang', 'allowplaybackspeed',
             'maxplaybackspeed', 'graceseconds', 'heartbeatinterval', 'forceservervalidation',
             'strictendvalidation', 'showsuspiciousflags', 'timecreated', 'timemodified',
         ]);

@@ -28,7 +28,7 @@
     * videourl, posterurl - media URLs (string)
     * focusmode, showtitle, titleleft, titlecenter, titleright - layout flags (bool)
     * backurl, backlabel - close button target (string)
-    * hascaptions, captions, defaultcaptionlang - captions metadata (bool|array|string)
+    * hascaptions, captions, defaultcaptionlang - enabled captions metadata (bool|array|string)
     * haschapters, chapterurl, chapterlabel - chapter track metadata (bool|string|string)
 
     Example context (json):
@@ -178,8 +178,10 @@
                     <dd class="col-8 col-sm-9">{{#str}}shortcut_mute, modernvideoplayer{{/str}}</dd>
                     <dt class="col-4 col-sm-3"><kbd>F</kbd></dt>
                     <dd class="col-8 col-sm-9">{{#str}}shortcut_fullscreen, modernvideoplayer{{/str}}</dd>
-                    <dt class="col-4 col-sm-3"><kbd>C</kbd></dt>
-                    <dd class="col-8 col-sm-9">{{#str}}shortcut_captions, modernvideoplayer{{/str}}</dd>
+                    {{#hascaptions}}
+                        <dt class="col-4 col-sm-3"><kbd>C</kbd></dt>
+                        <dd class="col-8 col-sm-9">{{#str}}shortcut_captions, modernvideoplayer{{/str}}</dd>
+                    {{/hascaptions}}
                     <dt class="col-4 col-sm-3"><kbd>0</kbd>…<kbd>9</kbd></dt>
                     <dd class="col-8 col-sm-9">{{#str}}shortcut_seekpercent, modernvideoplayer{{/str}}</dd>
                     <dt class="col-4 col-sm-3"><kbd>&lt;</kbd> / <kbd>&gt;</kbd></dt>

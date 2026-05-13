@@ -94,6 +94,12 @@ if ($ADMIN->fulltree) {
             'unmuted' => get_string('autoplayunmuted', 'modernvideoplayer'),
         ]
     ));
+    $settings->add(new admin_setting_configcheckbox(
+        'modernvideoplayer/defaultallowcaptions',
+        get_string('defaultallowcaptions', 'modernvideoplayer'),
+        '',
+        1
+    ));
     $settings->add(new admin_setting_configtext(
         'modernvideoplayer/defaultcaptionlang',
         get_string('defaultdefaultcaptionlang', 'modernvideoplayer'),

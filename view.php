@@ -81,7 +81,8 @@ if (!in_array($titleposition, $validtitlepositions, true)) {
 
 $enforcefocus = !empty($instance->enforcefocus);
 $allowpip = !$enforcefocus && !empty($instance->allowpip);
-$allowtranscriptdownload = !empty($instance->allowtranscriptdownload);
+$allowcaptions = !empty($instance->allowcaptions);
+$allowtranscriptdownload = $allowcaptions && !empty($instance->allowtranscriptdownload);
 
 $shownextactivityoverlay = !empty($instance->allownextactivityoverlay);
 $nextactivity = $shownextactivityoverlay
@@ -110,6 +111,7 @@ $playercontext = [
     'focusmode' => $focusmode,
     'enforcefocus' => $enforcefocus,
     'allowpip' => $allowpip,
+    'allowcaptions' => $allowcaptions,
     'allowtranscriptdownload' => $allowtranscriptdownload,
     'shownextactivityoverlay' => $shownextactivityoverlay,
     'nextactivityurl' => $nextactivityurl,
@@ -126,7 +128,7 @@ $defaultcaptionlang = (string) ($instance->defaultcaptionlang ?? 'en');
 if (!preg_match('/^[a-zA-Z]{2,3}(-[a-zA-Z]{2,4})?$/', $defaultcaptionlang)) {
     $defaultcaptionlang = 'en';
 }
-$captiontracks = modernvideoplayer_get_caption_tracks($context, $defaultcaptionlang);
+$captiontracks = $allowcaptions ? modernvideoplayer_get_caption_tracks($context, $defaultcaptionlang) : [];
 $playercontext['hascaptions'] = !empty($captiontracks);
 $playercontext['captions'] = $captiontracks;
 
@@ -145,6 +147,7 @@ $jsconfig = [
     'cmid' => $cm->id,
     'autoplay' => $autoplaymode,
     'hascaptions' => !empty($captiontracks),
+    'allowcaptions' => $allowcaptions,
     'haschapters' => $chaptertrack !== null,
     'defaultcaptionlang' => $defaultcaptionlang,
     'enforcefocus' => $enforcefocus,

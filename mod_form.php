@@ -64,16 +64,30 @@ class mod_modernvideoplayer_mod_form extends moodleform_mod {
         ]);
 
         $mform->addElement('header', 'captionssettings', get_string('captionssettings', 'modernvideoplayer'));
+        $mform->addElement('advcheckbox', 'allowcaptions', get_string('allowcaptions', 'modernvideoplayer'));
+        $mform->setDefault('allowcaptions', $defaults['allowcaptions']);
+        $mform->addHelpButton('allowcaptions', 'allowcaptions', 'modernvideoplayer');
         $mform->addElement('filemanager', 'captions', get_string('captions', 'modernvideoplayer'), null, [
             'subdirs' => 0,
             'maxfiles' => 10,
             'accepted_types' => ['.vtt'],
         ]);
         $mform->addHelpButton('captions', 'captions', 'modernvideoplayer');
+        $mform->hideIf('captions', 'allowcaptions', 'eq', 0);
         $mform->addElement('text', 'defaultcaptionlang', get_string('defaultcaptionlang', 'modernvideoplayer'), ['size' => 8]);
         $mform->setType('defaultcaptionlang', PARAM_ALPHANUMEXT);
         $mform->setDefault('defaultcaptionlang', $defaults['defaultcaptionlang']);
         $mform->addHelpButton('defaultcaptionlang', 'defaultcaptionlang', 'modernvideoplayer');
+        $mform->hideIf('defaultcaptionlang', 'allowcaptions', 'eq', 0);
+
+        $mform->addElement(
+            'advcheckbox',
+            'allowtranscriptdownload',
+            get_string('allowtranscriptdownload', 'modernvideoplayer')
+        );
+        $mform->setDefault('allowtranscriptdownload', $defaults['allowtranscriptdownload']);
+        $mform->addHelpButton('allowtranscriptdownload', 'allowtranscriptdownload', 'modernvideoplayer');
+        $mform->hideIf('allowtranscriptdownload', 'allowcaptions', 'eq', 0);
 
         $mform->addElement('filemanager', 'chapters', get_string('chapters', 'modernvideoplayer'), null, [
             'subdirs' => 0,
@@ -203,9 +217,6 @@ class mod_modernvideoplayer_mod_form extends moodleform_mod {
         $mform->setDefault('allowpip', $defaults['allowpip']);
         $mform->addHelpButton('allowpip', 'allowpip', 'modernvideoplayer');
         $mform->disabledIf('allowpip', 'enforcefocus', 'checked');
-        $mform->addElement('advcheckbox', 'allowtranscriptdownload', get_string('allowtranscriptdownload', 'modernvideoplayer'));
-        $mform->setDefault('allowtranscriptdownload', $defaults['allowtranscriptdownload']);
-        $mform->addHelpButton('allowtranscriptdownload', 'allowtranscriptdownload', 'modernvideoplayer');
 
         $mform->addElement('header', 'focusmodesettings', get_string('focusmodesettings', 'modernvideoplayer'));
         $mform->addElement('advcheckbox', 'showprimarynav', get_string('showprimarynav', 'modernvideoplayer'));

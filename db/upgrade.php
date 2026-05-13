@@ -271,5 +271,26 @@ function xmldb_modernvideoplayer_upgrade(int $oldversion): bool {
         upgrade_mod_savepoint(true, 2026050107, 'modernvideoplayer');
     }
 
+    if ($oldversion < 2026051300) {
+        // Per-activity switch for exposing uploaded WebVTT caption tracks.
+        $table = new xmldb_table('modernvideoplayer');
+        $field = new xmldb_field(
+            'allowcaptions',
+            XMLDB_TYPE_INTEGER,
+            '4',
+            null,
+            XMLDB_NOTNULL,
+            null,
+            '1',
+            'autoplay'
+        );
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2026051300, 'modernvideoplayer');
+    }
+
     return true;
 }

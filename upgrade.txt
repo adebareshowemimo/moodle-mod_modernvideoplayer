@@ -2,6 +2,12 @@ This file describes API and database changes in the mod_modernvideoplayer
 plugin. Information provided here is intended especially for developers and
 site admins tracking the plugin's git history between releases.
 
+=== 1.3.6 ===
+
+* Added the `modernvideoplayer.allowcaptions` setting and DB column
+  (int 4, default 1). When disabled, stored WebVTT caption files are kept
+  but not rendered into the player, transcript controls, or shortcuts help.
+
 === 1.2.0 ===
 
 * Privacy API: `\mod_modernvideoplayer\privacy\provider` now declares the
