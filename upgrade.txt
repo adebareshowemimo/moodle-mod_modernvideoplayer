@@ -2,6 +2,11 @@ This file describes API and database changes in the mod_modernvideoplayer
 plugin. Information provided here is intended especially for developers and
 site admins tracking the plugin's git history between releases.
 
+=== 1.3.7 ===
+
+* Release metadata bump only. No schema changes beyond the `1.3.6`
+  `allowcaptions` column.
+
 === 1.3.6 ===
 
 * Added the `modernvideoplayer.allowcaptions` setting and DB column
