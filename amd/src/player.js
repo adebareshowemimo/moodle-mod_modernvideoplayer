@@ -77,7 +77,11 @@ export const init = (cmid) => {
     // after natural end which would otherwise re-hide the next-activity overlay.
     let justEnded = false;
     let endOverlayStarted = false;
+    let endOverlayInProgress = false;
+    let nearEndCompletionAttempted = false;
     let nextActivityRefreshPromise = null;
+    const nextActivityButtonSelector = '[data-action="next-activity-go"], '
+        + '[data-action="resume-next-activity"]';
 
     const applySeek = (time) => {
         const targetTime = Math.max(0, Number(time) || 0);
@@ -186,6 +190,34 @@ export const init = (cmid) => {
         const buffered = (bufferedend / video.duration) * 100;
         UI.updateBuffered(root, buffered);
     };
+
+    const hasNextActivityTarget = () => !!config.nextactivityurl && !config.nextactivityisfallback;
+
+    const setNextActivityButtonsAvailable = (available) => {
+        root.querySelectorAll(nextActivityButtonSelector).forEach((button) => {
+            button.classList.toggle('d-none', !available);
+            button.hidden = !available;
+            if (available) {
+                button.removeAttribute('aria-hidden');
+            } else {
+                button.setAttribute('aria-hidden', 'true');
+                if (button.matches('a')) {
+                    button.removeAttribute('href');
+                }
+            }
+        });
+    };
+
+    const clearNextActivityTarget = () => {
+        config.nextactivityurl = '';
+        config.nextactivityname = '';
+        config.nextactivityisfallback = true;
+        setNextActivityButtonsAvailable(false);
+    };
+
+    if (config.nextactivityisfallback || !config.nextactivityurl) {
+        clearNextActivityTarget();
+    }
 
     getProgress(config.cmid).then((state) => {
         if (!state.videourl) {
@@ -354,7 +386,7 @@ export const init = (cmid) => {
                         eyebrow: config.strings.replayeyebrow,
                         buttonLabel: config.strings.replaywatching,
                         showRestart: false,
-                        showNextActivity: !!config.allownextactivityoverlay && !!config.nextactivityurl,
+                        showNextActivity: !!config.allownextactivityoverlay && hasNextActivityTarget(),
                     }
                 );
                 // Pre-seek to 0 so the seek bar and time display reflect the actual
@@ -376,8 +408,14 @@ export const init = (cmid) => {
         }
 
         const updateNextActivityOverlay = (nextactivity) => {
-            if (!nextactivity || !nextactivity.enabled) {
-                return;
+            if (
+                !nextactivity ||
+                !nextactivity.enabled ||
+                nextactivity.isfallback ||
+                !nextactivity.url
+            ) {
+                clearNextActivityTarget();
+                return false;
             }
 
             config.nextactivityurl = nextactivity.url || '';
@@ -392,87 +430,111 @@ export const init = (cmid) => {
 
             const label = config.strings.nextactivitycontinue;
 
-            root.querySelectorAll('[data-action="next-activity-go"], [data-action="resume-next-activity"]')
-                .forEach((button) => {
-                    button.textContent = label;
-                    button.classList.remove('d-none');
-                    button.hidden = false;
-                    button.removeAttribute('aria-hidden');
-                    button.style.removeProperty('display');
-                    if (button.matches('a') && config.nextactivityurl) {
-                        button.setAttribute('href', config.nextactivityurl);
-                    }
-                });
+            root.querySelectorAll(nextActivityButtonSelector).forEach((button) => {
+                button.textContent = label;
+                button.classList.remove('d-none');
+                button.hidden = false;
+                button.removeAttribute('aria-hidden');
+                button.style.removeProperty('display');
+                if (button.matches('a') && config.nextactivityurl) {
+                    button.setAttribute('href', config.nextactivityurl);
+                }
+            });
             window.console.info('mod_modernvideoplayer: refreshed next activity', {
                 nextactivityurl: config.nextactivityurl || '(empty)',
                 nextactivityname: config.nextactivityname || '(empty)',
                 nextactivityisfallback: config.nextactivityisfallback
             });
+            return true;
         };
 
         const refreshNextActivity = () => {
             if (!config.allownextactivityoverlay) {
-                return Promise.resolve();
+                return Promise.resolve(false);
             }
             if (!nextActivityRefreshPromise) {
                 nextActivityRefreshPromise = getNextActivity(config.cmid).then((nextactivity) => {
-                    updateNextActivityOverlay(nextactivity);
-                    return undefined;
+                    return updateNextActivityOverlay(nextactivity);
                 }).catch(() => {
                     window.console.warn(config.strings.progressunavailable);
-                }).then(() => {
+                    return false;
+                }).then((hasTarget) => {
                     nextActivityRefreshPromise = null;
-                    return undefined;
+                    return hasTarget;
                 });
             }
             return nextActivityRefreshPromise;
+        };
+
+        const revealNextActivityOverlay = (source) => {
+            if (!hasNextActivityTarget()) {
+                return false;
+            }
+            endOverlayStarted = true;
+            window.console.info('mod_modernvideoplayer: showing next-activity overlay', {source});
+            UI.showNextActivityOverlay(root);
+            // Re-show on the next frame to defeat any stray `play`/`playing`
+            // event the browser may emit out of the natural-end transition;
+            // `showNextActivityOverlay` is idempotent class-toggling so this
+            // is safe to call twice.
+            window.requestAnimationFrame(() => UI.showNextActivityOverlay(root));
+            return true;
         };
 
         const showCompletedNextActivityOverlay = (source) => {
             if (!config.allownextactivityoverlay) {
                 return;
             }
-            if (endOverlayStarted) {
+            if (endOverlayStarted || endOverlayInProgress) {
                 return;
             }
-            endOverlayStarted = true;
+            endOverlayInProgress = true;
             justEnded = true;
-            refreshNextActivity().then(() => {
-                window.console.info('mod_modernvideoplayer: showing next-activity overlay', {source});
-                UI.showNextActivityOverlay(root);
-                // Re-show on the next frame to defeat any stray `play`/`playing`
-                // event the browser may emit out of the natural-end transition;
-                // `showNextActivityOverlay` is idempotent class-toggling so this
-                // is safe to call twice.
-                window.requestAnimationFrame(() => UI.showNextActivityOverlay(root));
+            refreshNextActivity().then((hasTarget) => {
+                endOverlayInProgress = false;
+                if (!hasTarget) {
+                    return;
+                }
+                revealNextActivityOverlay(source);
             });
         };
 
-        const completeAndShowNextActivityOverlay = (source) => {
+        const completeAndShowNextActivityOverlay = (source, completionTime = null) => {
             if (!config.allownextactivityoverlay) {
                 return;
             }
-            if (endOverlayStarted) {
+            if (endOverlayStarted || endOverlayInProgress) {
                 return;
             }
-            endOverlayStarted = true;
+            endOverlayInProgress = true;
             justEnded = true;
-            Tracker.markComplete(config, video, state).then((response) => {
-                state.completed = response.completed;
-                state.percentcomplete = response.percentcomplete;
-                onUpdate(response);
-                return refreshNextActivity();
-            }).catch(() => {
-                window.console.warn(config.strings.progressunavailable);
-            }).then(() => {
-                window.console.info('mod_modernvideoplayer: showing next-activity overlay', {source});
-                UI.showNextActivityOverlay(root);
-                window.requestAnimationFrame(() => UI.showNextActivityOverlay(root));
-            });
+            const duration = Number.isFinite(video.duration) ? video.duration : 0;
+            const currentTime = completionTime !== null ? completionTime : video.currentTime;
+            Tracker.markComplete(config, video, state, currentTime, duration)
+                .then((response) => {
+                    state.completed = response.completed;
+                    state.percentcomplete = response.percentcomplete;
+                    onUpdate(response);
+                    if (!response.completed) {
+                        return false;
+                    }
+                    return refreshNextActivity();
+                }).catch(() => {
+                    window.console.warn(config.strings.progressunavailable);
+                    return false;
+                }).then((hasTarget) => {
+                    endOverlayInProgress = false;
+                    if (!hasTarget) {
+                        return;
+                    }
+                    revealNextActivityOverlay(source);
+                });
         };
 
-        const tracker = Tracker.start(config, video, state, onUpdate, () => {
-            showCompletedNextActivityOverlay('ended');
+        const tracker = Tracker.start(config, video, state, onUpdate, (response) => {
+            if (response && response.completed) {
+                showCompletedNextActivityOverlay('ended');
+            }
         });
         // Only send an immediate heartbeat when starting fresh from position 0.
         // If resumeposition > 0 a seek is pending; firing now would send currentTime=0
@@ -598,6 +660,8 @@ export const init = (cmid) => {
             // genuine `play` is allowed to hide the next-activity overlay normally.
             if (justEnded && video.currentTime < 1) {
                 justEnded = false;
+                endOverlayInProgress = false;
+                nearEndCompletionAttempted = false;
             }
             syncBufferedUi();
             syncPlayerUi();
@@ -617,15 +681,16 @@ export const init = (cmid) => {
 
         if (config.allownextactivityoverlay) {
             const goButton = root.querySelector('[data-action="next-activity-go"]');
-            goButton?.addEventListener('click', () => {
-                if (config.nextactivityurl) {
+            goButton?.addEventListener('click', (event) => {
+                event.preventDefault();
+                if (hasNextActivityTarget()) {
                     window.location.assign(config.nextactivityurl);
                 }
             });
 
             const resumeNextButton = root.querySelector('[data-action="resume-next-activity"]');
             resumeNextButton?.addEventListener('click', () => {
-                if (config.nextactivityurl) {
+                if (hasNextActivityTarget()) {
                     window.location.assign(config.nextactivityurl);
                 }
             });
@@ -634,6 +699,8 @@ export const init = (cmid) => {
             replayButton?.addEventListener('click', () => {
                 justEnded = false;
                 endOverlayStarted = false;
+                endOverlayInProgress = false;
+                nearEndCompletionAttempted = false;
                 UI.hideNextActivityOverlay(root);
                 // Replay = play from 0 without resetting progress/completion.
                 // Distinct from data-action="restart-playback" which calls reset_progress.
@@ -646,12 +713,13 @@ export const init = (cmid) => {
             // Watch `timeupdate` and trigger the overlay once we're effectively at
             // the end. The `justEnded` flag prevents re-triggering during replay.
             video.addEventListener('timeupdate', () => {
-                if (justEnded || endOverlayStarted) {
+                if (justEnded || endOverlayStarted || endOverlayInProgress || nearEndCompletionAttempted) {
                     return;
                 }
                 const duration = Number.isFinite(video.duration) ? video.duration : 0;
                 if (duration > 0 && video.currentTime >= (duration - 0.35)) {
-                    completeAndShowNextActivityOverlay('timeupdate-near-end');
+                    nearEndCompletionAttempted = true;
+                    completeAndShowNextActivityOverlay('timeupdate-near-end', duration);
                 }
             });
         }

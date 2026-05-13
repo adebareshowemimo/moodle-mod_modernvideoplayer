@@ -287,6 +287,71 @@ final class external_test extends externallib_advanced_testcase {
     }
 
     /**
+     * mark_complete can finalise a near-end mobile completion and unlock the next module.
+     */
+    public function test_mark_complete_from_near_end_position_unlocks_next_activity(): void {
+        global $DB;
+
+        $this->setUser($this->student);
+
+        $availability = json_encode([
+            'op' => '&',
+            'showc' => [true],
+            'c' => [[
+                'type' => 'completion',
+                'cm' => (int) $this->cm->id,
+                'e' => \COMPLETION_COMPLETE,
+            ]],
+        ]);
+        $page = $this->getDataGenerator()->create_module('page', [
+            'course' => $this->course->id,
+            'name' => 'Near-end unlocked lesson',
+            'availability' => $availability,
+        ]);
+
+        rebuild_course_cache((int) $this->course->id, true);
+        get_fast_modinfo((int) $this->course->id, 0, true);
+
+        $initial = get_progress::execute($this->cm->id);
+        $initial = external_api::clean_returnvalue(get_progress::execute_returns(), $initial);
+
+        $progress = $DB->get_record('modernvideoplayer_progress', [
+            'modernvideoplayerid' => $this->instance->id,
+            'userid' => $this->student->id,
+        ], '*', MUST_EXIST);
+        $progress->duration = 120.0;
+        $progress->lastposition = 119.65;
+        $progress->maxverifiedposition = 119.65;
+        $progress->totalsecondswatched = 119.65;
+        $progress->percentcomplete = 99.71;
+        $progress->completed = 0;
+        $progress->completiontime = null;
+        $progress->lastheartbeat = null;
+        $DB->update_record('modernvideoplayer_progress', $progress);
+        $DB->insert_record('modernvideoplayer_segments', (object) [
+            'progressid' => $progress->id,
+            'segmentstart' => 0.0,
+            'segmentend' => 119.65,
+            'watchedseconds' => 119.65,
+            'timecreated' => time(),
+        ]);
+
+        $complete = mark_complete::execute($this->cm->id, 120.0, 120.0, $initial['sessiontoken']);
+        $complete = external_api::clean_returnvalue(mark_complete::execute_returns(), $complete);
+        $this->assertTrue((bool) $complete['completed']);
+
+        $result = get_next_activity::execute($this->cm->id);
+        $result = external_api::clean_returnvalue(get_next_activity::execute_returns(), $result);
+
+        $this->assertTrue((bool) $result['enabled']);
+        $this->assertSame('Near-end unlocked lesson', $result['name']);
+        $this->assertStringContainsString('/mod/page/view.php', $result['url']);
+        $this->assertStringContainsString('id=' . $page->cmid, $result['url']);
+        $this->assertStringContainsString('forceview=1', $result['url']);
+        $this->assertFalse((bool) $result['isfallback']);
+    }
+
+    /**
      * get_next_activity self-heals stale Moodle completion on a fresh completed view.
      */
     public function test_get_next_activity_syncs_existing_completed_progress(): void {

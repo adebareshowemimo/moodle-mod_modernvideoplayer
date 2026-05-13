@@ -26,7 +26,9 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['allowfullscreen'] = 'Allow fullscreen';
 $string['allownextactivityoverlay'] = 'Show "next activity" overlay when video ends';
-$string['allownextactivityoverlay_help'] = 'When enabled, an overlay appears at the end of the video with **Replay** and **Continue** buttons. The Continue target defaults to the next activity in course order, but can be overridden per activity. If the target activity is unavailable, Continue returns the learner to the course page.';
+$string['allownextactivityoverlay_help'] = 'When enabled, an overlay appears at the end of the video with **Replay** ' .
+    'and **Continue** buttons. The Continue target defaults to the next activity in course order, but can be ' .
+    'overridden per activity. If a valid target cannot be resolved, the Continue action is not shown.';
 $string['allowpip'] = 'Allow Picture-in-Picture';
 $string['allowpip_help'] = 'When enabled, learners can pop the video out into a floating Picture-in-Picture window. Disabled automatically when Focus mode is on so the learner cannot detach the video from the course page.';
 $string['allowplaybackspeed'] = 'Allow playback speed control';

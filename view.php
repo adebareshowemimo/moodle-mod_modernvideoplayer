@@ -87,6 +87,12 @@ $shownextactivityoverlay = !empty($instance->allownextactivityoverlay);
 $nextactivity = $shownextactivityoverlay
     ? modernvideoplayer_get_next_activity($course, $cm, $instance)
     : null;
+$nextactivityurl = (!empty($nextactivity) && empty($nextactivity['isfallback']))
+    ? (string) $nextactivity['url']
+    : '';
+$nextactivityname = (!empty($nextactivity) && empty($nextactivity['isfallback']))
+    ? (string) $nextactivity['name']
+    : '';
 
 $playercontext = [
     'cmid' => $cm->id,
@@ -106,8 +112,8 @@ $playercontext = [
     'allowpip' => $allowpip,
     'allowtranscriptdownload' => $allowtranscriptdownload,
     'shownextactivityoverlay' => $shownextactivityoverlay,
-    'nextactivityurl' => $nextactivity['url'] ?? '',
-    'nextactivityname' => $nextactivity['name'] ?? '',
+    'nextactivityurl' => $nextactivityurl,
+    'nextactivityname' => $nextactivityname,
     'nextactivityisfallback' => $nextactivity['isfallback'] ?? false,
     'backurl' => $backurl->out(false),
     'backlabel' => get_string('back'),
@@ -145,8 +151,8 @@ $jsconfig = [
     'allowpip' => $allowpip,
     'allowtranscriptdownload' => $allowtranscriptdownload,
     'allownextactivityoverlay' => $shownextactivityoverlay,
-    'nextactivityurl' => $nextactivity['url'] ?? '',
-    'nextactivityname' => $nextactivity['name'] ?? '',
+    'nextactivityurl' => $nextactivityurl,
+    'nextactivityname' => $nextactivityname,
     'nextactivityisfallback' => $nextactivity['isfallback'] ?? false,
     'transcriptfilename' => clean_filename(format_string($instance->name)) . '-'
         . get_string('transcriptdownloadfilename', 'modernvideoplayer') . '.txt',

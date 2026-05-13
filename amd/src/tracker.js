@@ -36,12 +36,18 @@ const heartbeatRequest = (config, video, state) => Ajax.call([{
     }
 }])[0];
 
-export const markComplete = (config, video, state) => Ajax.call([{
+export const markComplete = (
+    config,
+    video,
+    state,
+    currentTime = video.currentTime,
+    duration = video.duration || 0
+) => Ajax.call([{
     methodname: 'mod_modernvideoplayer_mark_complete',
     args: {
         cmid: config.cmid,
-        currenttime: video.currentTime,
-        duration: video.duration || 0,
+        currenttime: currentTime,
+        duration,
         sessiontoken: state.sessiontoken
     }
 }])[0];

@@ -119,7 +119,7 @@
                         <h3 class="h4 mb-2" data-region="next-activity-name">{{nextactivityname}}</h3>
                         <p class="mb-4 text-white-50">{{#str}}nextactivitybody, modernvideoplayer{{/str}}</p>
                         <div class="d-flex flex-column flex-sm-row justify-content-center gap-2" data-region="next-activity-actions">
-                            <a class="btn btn-primary px-4" href="{{nextactivityurl}}" data-action="next-activity-go">
+                            <a class="btn btn-primary px-4" {{#nextactivityurl}}href="{{nextactivityurl}}"{{/nextactivityurl}} data-action="next-activity-go">
                                 {{#str}}nextactivitycontinue, modernvideoplayer{{/str}}
                             </a>
                             <button type="button" class="btn btn-outline-light px-4" data-action="next-activity-replay">{{#str}}nextactivityreplay, modernvideoplayer{{/str}}</button>
